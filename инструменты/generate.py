@@ -99,18 +99,37 @@ def main():
                            order=order))
     known = {t["code"] for t in topics}
 
+    # ---------- Типы заданий (классификация банка задач) ----------
+    yrows, yc = read("типы.csv")
+    tipy = OrderedDict()                     # «11.1» → тип
+    zad_name = {}                            # 11 → «Текстовые задачи»
+    for r in yrows:
+        k = cell(r, yc("Код типа"))
+        if not k:
+            continue
+        n = int(cell(r, yc("Задание")))
+        zad_name[n] = cell(r, yc("Название задания"))
+        tipy[k] = dict(code=k, tl=k.replace(".", "-"), task=n, name=cell(r, yc("Тип")),
+                       bank_n=cell(r, yc("Задач в банке")), url=cell(r, yc("Ссылка")))
+
     # ---------- Разборы и связи ----------
     rrows, rc = read("разборы.csv")
     razbory = []
     for r in rrows:
         code = cell(r, rc("Код"))
-        if not code or "ПРИМЕР" in cell(r, rc("Пример задачи")):
+        if not code or "ПРИМЕР" in cell(r, rc("Кратко")):
             continue
         task = cell(r, rc("Задание"))
+        tip = re.match(r"\s*(\d+\.\d+)", cell(r, rc("Тип")))
+        tip = tip.group(1) if tip else ""
+        if tip and tip not in tipy:
+            print(f"ВНИМАНИЕ: у разбора {code} неизвестный тип {tip} — проверь лист «Типы»")
+            tip = ""
         razbory.append(dict(code=code, tl=translit(code),
-                            task=int(task) if task.isdigit() else 0,
-                            type=cell(r, rc("Тип")), about=cell(r, rc("Пример задачи"))))
+                            task=int(task) if task.isdigit() else (tipy[tip]["task"] if tip else 0),
+                            tip=tip, about=cell(r, rc("Кратко"))))
     known_r = {z["code"] for z in razbory}
+    tip_of = {z["code"]: z["tip"] for z in razbory}
 
     srows, sc = read("связи.csv")
     gde = defaultdict(list)                  # тема → ключевые разборы
@@ -143,28 +162,41 @@ def main():
     L.append("")
     for t in topics:
         deps = ", ".join(r"\tref{%s}" % d for d in t["deps"])
-        # «Где встречается»: до 3 конкретных примеров задач, остальное — «и ещё N»
-        zs = gde.get(t["code"], [])
-        g = "".join(r"\pfGde{%s}" % z for z in zs[:3])
-        if len(zs) > 3:
-            g += r"\pfGdeEshche{%d}" % (len(zs) - 3)
+        # «Где встречается»: типы заданий (по ключевым связям с разборами), без повторов
+        ts = []
+        for z in gde.get(t["code"], []):
+            if tip_of.get(z) and tip_of[z] not in ts:
+                ts.append(tip_of[z])
+        ts.sort(key=lambda k: tuple(int(x) for x in k.split(".")))
+        g = "".join(r"\pfGdeTip{%s}" % k for k in ts)
         old = t["old"] if t["old"].startswith("—") else (
             f"стр. {t['pages']} (старое задание {t['old']})" if t["pages"] else "")
         L.append(r"\pfDefTema{%s}{%s}{%s}{%s}{%s}{%s}{%s}{%s}" % (
             t["code"], t["tl"], tex(t["title"]), t["ch"], deps,
             tex(t["tasks"]), tex(old), g))
     L.append("")
+    for n, name in sorted(zad_name.items()):
+        L.append(r"\pfDefZadanie{%d}{%s}{%s}" % (
+            n, tex(name), ",".join(k for k, y in tipy.items() if y["task"] == n)))
+    for k, y in tipy.items():
+        L.append(r"\pfDefTip{%s}{%s}{%d}{%s}{%s}{%s}" % (
+            k, y["tl"], y["task"], tex(y["name"]), y["bank_n"], y["url"]))
+    L.append("")
     for z in razbory:
         k, a = nuzhno.get(z["code"], ([], []))
+        title = z["about"] or (tipy[z["tip"]]["name"] if z["tip"] else "")
         L.append(r"\pfDefRazbor{%s}{%s}{%d}{%s}{%s}{%s}{%s}" % (
-            z["code"], z["tl"], z["task"], tex(z["type"]),
+            z["code"], z["tl"], z["task"], tex_bez_razryva(title),
             ", ".join(r"\tref{%s}" % c for c in k), ", ".join(r"\tref{%s}" % c for c in a),
-            tex_bez_razryva(z["about"])))
+            z["tip"]))
+    # типы, по которым в шпоре уже есть разборы (для оглавления)
     po_zad = defaultdict(list)
-    for z in sorted(razbory, key=lambda z: z["code"]):
-        po_zad[z["task"]].append(z["code"])
+    for z in razbory:
+        if z["tip"] and z["tip"] not in po_zad[z["task"]]:
+            po_zad[z["task"]].append(z["tip"])
     for n in sorted(po_zad):
-        L.append(r"\pfZadanieRazbory{%d}{%s}" % (n, ",".join(po_zad[n])))
+        L.append(r"\pfZadanieTipy{%d}{%s}" % (n, ",".join(
+            sorted(po_zad[n], key=lambda k: int(k.split(".")[1])))))
     write("мета.tex", L)
 
     # ---------- Содержимое теории ----------
@@ -182,11 +214,16 @@ def main():
 
     # ---------- Содержимое практики ----------
     L = ["% СГЕНЕРИРОВАНО — разборы по номерам заданий ЕГЭ-2027", ""]
-    cur = None
-    for z in sorted(razbory, key=lambda z: (z["task"], z["code"])):
+    cur = curtip = None
+    def tip_key(z):
+        return int(z["tip"].split(".")[1]) if z["tip"] else 999
+    for z in sorted(razbory, key=lambda z: (z["task"], tip_key(z), z["code"])):
         if z["task"] != cur:
-            cur = z["task"]
+            cur, curtip = z["task"], None
             L.append(r"\pfZadanie{%d}" % cur)
+        if z["tip"] and z["tip"] != curtip:
+            curtip = z["tip"]
+            L.append(r"\pfTip{%s}" % curtip)
         rel = f"практика/{z['code']}.tex"
         L.append(r"\input{%s}" % rel)
         made += stub_razbor(rel, z)

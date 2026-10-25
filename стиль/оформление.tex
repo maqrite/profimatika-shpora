@@ -131,7 +131,7 @@
 % ======================================================================
 \newcommand\pf@plashka[4]{% #1 надпись сверху, #2 крупный код, #3 название, #4 список
   \begin{tcolorbox}[enhanced, colback=white, colframe=pfRamka, boxrule=0.7pt, arc=2.2mm,
-    left=4mm, right=4mm, top=3mm, bottom=3mm, before skip=0pt, after skip=5mm,
+    left=4mm, right=4mm, top=3mm, bottom=3mm, before skip=0pt, after skip=3mm,
     underlay={\begin{scope}\clip[rounded corners=2.2mm] (frame.south west) rectangle (frame.north east);
       \draw[pfKletka, step=5mm, line width=0.4pt] (frame.south west) grid (frame.north east);\end{scope}}]
     {\color{pfSeryj}\pfBrendShrift\fontsize{7.5}{9}\selectfont #1}\par\vspace{2.5mm}
@@ -142,7 +142,30 @@
   \end{tcolorbox}}
 \renewcommand\pfGlavaVid[3]{\renewcommand\pfVkladkaSsylka{glava:\pf@g}\colorlet{pfVkladkaCvet}{pfBrend}\pf@plashka{#3}{#1}{#2}{}}
 \renewcommand\pfZadanieVid[1]{\renewcommand\pfVkladkaSsylka{zadanie:#1}\colorlet{pfVkladkaCvet}{pfPurple}%
-  \pf@plashka{Практика · разборы прототипов}{№\,#1}{Задание #1 ЕГЭ}{}}
+  \def\pf@sp{{\color{pfSeryj}\scriptsize Типы задания — по классификации банка задач Профиматики
+    \hfill разбор\hspace{6mm}в банке}\par\vspace{1mm}}%
+  \ifcsdef{pf@zadtipy@#1}{\edef\pf@tmp{\csuse{pf@zadtipy@#1}}%
+    \expandafter\forcsvlist\expandafter\pf@dobavTip\expandafter{\pf@tmp}}{}%
+  \pf@plashka{Практика · задание #1}{№\,#1}{\ifcsdef{pf@zadname@#1}{\csuse{pf@zadname@#1}}{Задание #1}}{\pf@sp}}
+\newcommand\pf@dobavTip[1]{\appto\pf@sp{\pf@tipStroka{#1}}}
+% строка типа в плашке задания: код · название · страница разбора · ссылка в банк
+\newcommand\pf@tipStroka[1]{\edef\pf@y{\csuse{pf@tl@#1}}%
+  \par\noindent\makebox[8mm][l]{\color{pfPurple}\pfMedium #1}%
+  \ifcsdef{pf@have@tip:\pf@y}%
+    {\parbox[t]{0.62\linewidth}{\raggedright\hyperlink{tip:\pf@y}{\csuse{pf@title@#1}}}\hfill
+     \hyperlink{tip:\pf@y}{\makebox[10mm][r]{\color{pfAkcent}с.\,\getpagerefnumber{tip:\pf@y}}}}%
+    {\parbox[t]{0.62\linewidth}{\raggedright\textcolor{pfSeryj}{\csuse{pf@title@#1}}}\hfill\makebox[10mm]{}}%
+  \hspace{2mm}\href{\csuse{pf@bankurl@#1}}{\makebox[13mm][r]{\color{pfBrendTemn}\csuse{pf@bankn@#1}\,$\nearrow$}}%
+  \par\vspace{0.4mm}}
+% Заголовок типа в практике: полоса + ссылка на задачи этого типа в банке
+\renewcommand\pfTipVid[1]{\par
+  \begin{tcolorbox}[enhanced, colback=pfRazborFon, colframe=pfRazborFon, boxrule=0pt, arc=1.6mm,
+    left=2.5mm, right=2.5mm, top=1.6mm, bottom=1.4mm, before skip=3mm, after skip=0mm]
+    \pf@mark{tip}{\pf@y}%
+    {\color{pfPurple}\pfBrendZhirnyj\fontsize{10}{12}\selectfont #1}\enspace
+    {\pfBrendZhirnyj\fontsize{10}{12}\selectfont\csuse{pf@title@#1}}\hfill
+    \href{\csuse{pf@bankurl@#1}}{\color{pfBrendTemn}\footnotesize ещё \csuse{pf@bankn@#1} задач с разборами в банке\,$\nearrow$}
+  \end{tcolorbox}}
 
 % ======================================================================
 % 6. Обложка, часть, оглавление
@@ -194,11 +217,12 @@
   \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@gl@temy@#1}}%
   \expandafter\forcsvlist\expandafter\pf@tocTema\expandafter{\pf@tmp}}
 \renewcommand\pfStrokaZadaniya[1]{%
-  \vspace{2.2mm}\pf@toc{zadanie:#1}{\makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\pfMedium Задание #1}}{zadanie:#1}%
-  \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@zad@razb@#1}}%
-  \expandafter\forcsvlist\expandafter\pf@tocRazbor\expandafter{\pf@tmp}}
+  \vspace{2.2mm}\pf@toc{zadanie:#1}{\makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\pfMedium
+    \ifcsdef{pf@zadname@#1}{\csuse{pf@zadname@#1}}{Задание #1}}}{zadanie:#1}%
+  \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@zad@tipy@#1}}%
+  \expandafter\forcsvlist\expandafter\pf@tocTip\expandafter{\pf@tmp}}
 \newcommand\pf@tocTema[1]{\pf@tocMelko{tema}{#1}}
-\newcommand\pf@tocRazbor[1]{\pf@tocMelko{razbor}{#1}}
+\newcommand\pf@tocTip[1]{\pf@tocMelko{tip}{#1}}
 \newcommand\pfZagolovok[1]{{\pfBrendZhirnyj\fontsize{18}{22}\selectfont #1}\par\vspace{5mm}}
 \newcommand\pfPodzagolovok[1]{\par\vspace{2mm}{\color{pfSeryj}\pfBrendShrift\fontsize{8}{10}\selectfont #1}\par\vspace{2.5mm}}
 
