@@ -39,6 +39,14 @@ def tex(s):
     return s
 
 
+def tex_bez_razryva(s):
+    """Как tex(), но формулы вида «|x − 2| ≤ 1» не разрываются по строкам."""
+    s = tex(s)
+    for op in ("−", "≤", "≥", "=", "+", "<", ">", "·", "≠"):
+        s = s.replace(f" {op} ", f"~{op}~")
+    return s
+
+
 def codes(s):
     return [c.strip() for c in re.split(r"[;,]", s or "") if c.strip()]
 
@@ -96,12 +104,12 @@ def main():
     razbory = []
     for r in rrows:
         code = cell(r, rc("Код"))
-        if not code or "ПРИМЕР" in cell(r, rc("Кратко")):
+        if not code or "ПРИМЕР" in cell(r, rc("Пример задачи")):
             continue
         task = cell(r, rc("Задание"))
         razbory.append(dict(code=code, tl=translit(code),
                             task=int(task) if task.isdigit() else 0,
-                            type=cell(r, rc("Тип")), about=cell(r, rc("Кратко"))))
+                            type=cell(r, rc("Тип")), about=cell(r, rc("Пример задачи"))))
     known_r = {z["code"] for z in razbory}
 
     srows, sc = read("связи.csv")
@@ -135,7 +143,11 @@ def main():
     L.append("")
     for t in topics:
         deps = ", ".join(r"\tref{%s}" % d for d in t["deps"])
-        g = ", ".join(r"\rref{%s}" % z for z in gde.get(t["code"], []))
+        # «Где встречается»: до 3 конкретных примеров задач, остальное — «и ещё N»
+        zs = gde.get(t["code"], [])
+        g = "".join(r"\pfGde{%s}" % z for z in zs[:3])
+        if len(zs) > 3:
+            g += r"\pfGdeEshche{%d}" % (len(zs) - 3)
         old = t["old"] if t["old"].startswith("—") else (
             f"стр. {t['pages']} (старое задание {t['old']})" if t["pages"] else "")
         L.append(r"\pfDefTema{%s}{%s}{%s}{%s}{%s}{%s}{%s}{%s}" % (
@@ -144,9 +156,10 @@ def main():
     L.append("")
     for z in razbory:
         k, a = nuzhno.get(z["code"], ([], []))
-        L.append(r"\pfDefRazbor{%s}{%s}{%d}{%s}{%s}{%s}" % (
+        L.append(r"\pfDefRazbor{%s}{%s}{%d}{%s}{%s}{%s}{%s}" % (
             z["code"], z["tl"], z["task"], tex(z["type"]),
-            ", ".join(r"\tref{%s}" % c for c in k), ", ".join(r"\tref{%s}" % c for c in a)))
+            ", ".join(r"\tref{%s}" % c for c in k), ", ".join(r"\tref{%s}" % c for c in a),
+            tex_bez_razryva(z["about"])))
     po_zad = defaultdict(list)
     for z in sorted(razbory, key=lambda z: z["code"]):
         po_zad[z["task"]].append(z["code"])

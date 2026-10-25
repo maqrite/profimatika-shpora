@@ -91,9 +91,9 @@
   \csdef{pf@deps@#1}{#5}\csdef{pf@tasks@#1}{#6}\csdef{pf@old@#1}{#7}\csdef{pf@gde@#1}{#8}}
 \newcommand\pfGlavaTemy[2]{\csdef{pf@gl@temy@#1}{#2}}       % список тем главы
 \newcommand\pfZadanieRazbory[2]{\csdef{pf@zad@razb@#1}{#2}}  % список разборов задания
-\newcommand\pfDefRazbor[6]{% код, латиница, задание, тип, ключевые темы, вспомогательные
+\newcommand\pfDefRazbor[7]{% код, латиница, задание, тип, ключевые темы, вспомогательные, кратко о задаче
   \csdef{pf@tl@#1}{#2}\csdef{pf@task@#1}{#3}\csdef{pf@title@#1}{#4}%
-  \csdef{pf@need@#1}{#5}\csdef{pf@needaux@#1}{#6}}
+  \csdef{pf@need@#1}{#5}\csdef{pf@needaux@#1}{#6}\csdef{pf@about@#1}{#7}}
 
 % ================= Ссылки по кодам =================
 % \tref{П3.1} — на тему, \rref{Р16-01} — на разбор, \trefk — компактно, без страницы.
@@ -175,10 +175,18 @@
   \ifboolexpr{test {\ifcsvoid{pf@deps@\pf@cur}} and test {\ifcsvoid{pf@gde@\pf@cur}}
     and test {\ifcsvoid{pf@tasks@\pf@cur}}}{}{\tcblower
   \ifcsvoid{pf@deps@\pf@cur}{}{\pfMetaOpiraetsya\ \csuse{pf@deps@\pf@cur}\par}%
-  \ifcsvoid{pf@gde@\pf@cur}{}{\pfMetaGde\ \csuse{pf@gde@\pf@cur}\par}%
+  \ifcsvoid{pf@gde@\pf@cur}{}{\pf@gdePervyjtrue\pfMetaGde\ \csuse{pf@gde@\pf@cur}\par}%
   \ifcsvoid{pf@tasks@\pf@cur}{}{\pfMetaZadaniya\ \csuse{pf@tasks@\pf@cur}}}}
 \newcommand\pfMetaOpiraetsya{Опирается на:}
 \newcommand\pfMetaGde{Где встречается:}
+% Одна строка «где встречается»: номер задания, тип, конкретная задача, ссылка на разбор
+% первая строка идёт сразу после «Где встречается:», следующие — с новой строки с отступом
+\newif\ifpf@gdePervyj
+\newcommand\pfGde[1]{%
+  \ifpf@gdePervyj\pf@gdePervyjfalse\else\par\noindent\hspace*{1.5em}\fi
+  №\,\csuse{pf@task@#1} · \csuse{pf@title@#1}\ifcsvoid{pf@about@#1}{}{: \csuse{pf@about@#1}}%
+  \ —\ разбор \rref{#1}}
+\newcommand\pfGdeEshche[1]{\par\noindent\hspace*{1.5em}и ещё #1 — см. указатель «задание $\to$ темы»}
 \newcommand\pfMetaZadaniya{Задания ЕГЭ: №}
 \newcommand\pfDlinnyeTemy{}
 
