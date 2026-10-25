@@ -8,12 +8,14 @@ $|a|=\begin{cases} a, & a\geqslant 0,\\ -a, & a<0.\end{cases}$\par
 
 \begin{pfTablica}[bez shapki]{ll}
 \pfPodshapka{Свойства}\\
-$|a|\geqslant 0$, \ $|-a|=|a|$ & $|a|^2=a^2$, \ $\sqrt{a^2}=|a|$\\
-$|ab|=|a|\,|b|$, \ $\left|\frac ab\right|=\frac{|a|}{|b|}$ & $|a-b|=|b-a|$\\
+$|a|\geqslant 0$, \ $\lvert -a\rvert=|a|$ & $|a|^2=a^2$, \ $\sqrt{a^2}=|a|$\\
+$|ab|=|a|\,|b|$, \ $\left|\frac ab\right|=\frac{|a|}{|b|}$, $b\ne0$ & $|a-b|=|b-a|$\\
 $|a+b|=|a|+|b| \iff ab\geqslant 0$ & $|a|+|b|=a+b \iff a,b\geqslant 0$\\
-\pfPodshapka{Базовые переходы при $c>0$ (для $\leqslant$, $\geqslant$ — так же)}\\
-$|f|=c \iff f=\pm c$ & \Block[l]{2-1}{$|f|>c \iff \left[\begin{aligned} f&>c,\\ f&<-c\end{aligned}\right.$}\\
-$|f|<c \iff -c<f<c$ & \\
+\pfPodshapka{Базовые переходы}\\
+\Block[l]{1-2}{$|f|=c \iff f=\pm c$ \ при $c\geqslant0$; \ при $c<0$ решений нет}\\
+$|f|<c \iff -c<f<c$ & $|f|>c \iff f>c$ \ или \ $f<-c$\\
+\Block[l]{1-2}{\parbox{95mm}{\raggedright\footnotesize\color{pfSeryj}Для $\leqslant$ и $\geqslant$ — так же, с нестрогими знаками.
+  Переходы для неравенств верны при любом $c$: при $c\leqslant0$ они сами дают «нет решений» или «все $x$».}}\\
 \end{pfTablica}
 
 \smallskip
@@ -28,5 +30,5 @@ $|f|<c \iff -c<f<c$ & \\
 \begin{primer}
 $|x-2|\leqslant3$: точки на расстоянии не больше 3 от числа 2, то есть $x\in[-1;\,5]$.
 \end{primer}
-\risunok[0.62]{А1.2_1}
+\risunok[0.5]{А1.2_1}
 \end{tema}

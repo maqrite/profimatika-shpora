@@ -211,6 +211,7 @@
 % \end{pfTablica}
 % Опции: [bez shapki] — без шапки, только «зебра»; [levo] — прижать влево.
 % Внутри: \pfPodshapka{текст} — строка-подзаголовок на всю ширину; \pfItog — итоговая строка.
+% Ячейку с «&» внутри (aligned, cases) берите в фигурные скобки: {$...$} — иначе столбцы посчитаются неверно.
 \definecolor{pfZebra}{RGB}{246,249,255}
 \newif\ifpf@shapka \newif\ifpf@levo
 \pgfkeys{/pfTab/.is family, /pfTab,
