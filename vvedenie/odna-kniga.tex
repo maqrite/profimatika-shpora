@@ -1,0 +1,22 @@
+% Порядок однокнижной версии (shpora.tex и pilot.tex)
+\pfOblozhka
+
+\renewcommand\pfKolontitul{Оглавление}
+\phantomsection\hypertarget{oglavlenie}{}%
+\pdfbookmark[0]{Оглавление}{bm-oglavlenie}%
+\pfZagolovok{Оглавление}
+\pfPodzagolovok{Часть 1. Теория}
+\input{sgenerirovano/oglavlenie-teoriya}
+\pfPodzagolovok{Часть 2. Практика}
+\input{sgenerirovano/oglavlenie-praktika}
+
+\input{vvedenie/kak-polzovatsya}
+
+\pfChast{1}{Теория}{Все темы профильного ЕГЭ в логическом порядке:
+  от дробей и процентов до производной, геометрии и вероятности.}
+\input{sgenerirovano/teoriya-soderzhanie}
+\input{vvedenie/ukazatel}
+
+\pfChast{2}{Практика}{Разборы частых прототипов по номерам заданий ЕГЭ.
+  В каждом разборе — ссылки на нужные темы из первой части.}
+\input{sgenerirovano/praktika-soderzhanie}

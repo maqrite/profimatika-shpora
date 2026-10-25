@@ -1,0 +1,20 @@
+% Д1.5-1 — Касательная к графику функции; точки экстремума
+\documentclass[tikz,border=3pt]{standalone}
+\input{../preamble}
+\begin{document}
+\begin{tikzpicture}[pf]
+\begin{axis}[pfaxis, width=8cm, xmin=-2, xmax=4.5, ymin=-3, ymax=3]
+  % график функции — задаётся формулой, рисуется точно
+  \addplot[pfgraph, domain=-1.5:3.6] {0.25*(x^3 - 3*x^2)};
+  % касательная в точке x0 = 3: y = f'(3)(x - 3) + f(3)
+  \addplot[pftan, domain=2.2:3.9] {2.25*(x-3)};
+  % точки экстремума (x = 0 и x = 2) и проекции
+  \draw[aux] (axis cs:2,0) -- (axis cs:2,-1);
+  \fill[pfPurple] (axis cs:0,0) circle[radius=1.8pt];
+  \fill[pfPurple] (axis cs:2,-1) circle[radius=1.8pt];
+  \fill[pfOrange] (axis cs:3,0) circle[radius=1.8pt];
+  \node[side, text=pfOrange, below right] at (axis cs:3,0) {$x_0$};
+  \node[side, text=pfBlue, anchor=west] at (axis cs:0.3,-2.4) {$y=f(x)$};
+\end{axis}
+\end{tikzpicture}
+\end{document}

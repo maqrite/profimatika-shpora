@@ -1,0 +1,22 @@
+% Р16-01 — Неравенство с модулем
+% Источник: старая методичка, стр. 146–147 (пример 1)
+
+\begin{razbor}{Р16-01}
+\Uslovie Решите неравенство $\bigl|\,3-|x-2|\,\bigr|\leqslant 1$.
+
+\Reshenie Внешний модуль раскрываем базовым переходом $|f|\leqslant c \iff -c\leqslant f\leqslant c$
+(\tref{А1.2}):
+\[
+  -1\leqslant 3-|x-2|\leqslant 1
+  \iff -4\leqslant -|x-2|\leqslant -2
+  \iff 2\leqslant |x-2|\leqslant 4.
+\]
+Теперь через расстояние: точка $x$ удалена от числа 2 не меньше чем на 2
+и не больше чем на 4. Слева от 2 это отрезок $[-2;\,0]$, справа — $[4;\,6]$:
+\[
+  \left[\begin{aligned} -4\leqslant x-2&\leqslant -2,\\ 2\leqslant x-2&\leqslant 4\end{aligned}\right.
+  \iff
+  \left[\begin{aligned} -2\leqslant x&\leqslant 0,\\ 4\leqslant x&\leqslant 6.\end{aligned}\right.
+\]
+\Otvet{$[-2;\,0]\cup[4;\,6]$.}
+\end{razbor}

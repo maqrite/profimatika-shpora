@@ -1,0 +1,266 @@
+% oformlenie.tex — оформление «Клетка»: тетрадная клетка с обложки, φ, вкладки разделов.
+% Только внешний вид. Логика (ссылки, длинные темы, сборка) — в shpora.sty.
+% Подключается автоматически в конце преамбулы.
+
+% ======================================================================
+% 1. Цвета страницы
+% ======================================================================
+\colorlet{pfAkcent}{pfBrendTemn}             % коды-ссылки в тексте, «Пример»
+\definecolor{pfRamka}{RGB}{196,218,246}      % рамки плашек
+\definecolor{pfFon}{RGB}{236,244,255}        % полоса заголовка темы
+\definecolor{pfRazborRamka}{RGB}{222,206,250}
+\definecolor{pfRazborFon}{RGB}{245,239,255}
+\definecolor{pfSeryj}{RGB}{110,118,130}
+
+% Плашка-код (Ч1.3, Р11-01): \pfChip[цвет]{текст}
+\renewcommand\pfChip[2][pfBrend]{\tcbox[on line, colback=#1, colupper=white, boxrule=0pt,
+  arc=1mm, boxsep=0pt, left=1.2mm, right=1.2mm, top=0.75mm, bottom=0.6mm]%
+  {\pfBrendZhirnyj\fontsize{8}{8}\selectfont #2}}
+
+% ======================================================================
+% 2. Клетка
+% ======================================================================
+\newcommand\pfKletka[4]{% x1,y1,x2,y2 в мм от левого нижнего угла страницы
+  \begin{scope}[shift={(current page.south west)}]
+    \clip (#1mm,#2mm) rectangle (#3mm,#4mm);
+    \draw[pfKletka, line width=0.4pt, step=5mm] (0,0) grid (150mm,212mm);
+  \end{scope}}
+
+% ======================================================================
+% 3. Колонтитулы
+% ======================================================================
+% Вкладка раздела на правом краю: место по высоте = номер раздела
+\def\pf@vkladka{\ifcsdef{pf@vk@\pfRazdel}{\csuse{pf@vk@\pfRazdel}}{-1}}
+\csdef{pf@vk@Числа и вычисления}{0}
+\csdef{pf@vk@Алгебра}{1}
+\csdef{pf@vk@Тригонометрия}{2}
+\csdef{pf@vk@Функции и графики}{3}
+\csdef{pf@vk@Производная}{4}
+\csdef{pf@vk@Планиметрия}{5}
+\csdef{pf@vk@Векторы и координаты}{6}
+\csdef{pf@vk@Стереометрия}{7}
+\csdef{pf@vk@Вероятность и статистика}{8}
+\csdef{pf@vk@Модели: текстовые и экономические задачи}{9}
+\csdef{pf@vk@Практика}{10}
+\newcommand\pfVkladkaSsylka{}   % куда ведёт вкладка (начало главы / задания)
+\colorlet{pfVkladkaCvet}{pfBrend} % теория — голубая, практика — фиолетовая
+
+% Логотип и иконки собираются заранее в боксы (вложенный tikz в колонтитуле ломает позицию)
+\newsavebox\pf@boxLogo \newsavebox\pf@boxSoc
+\AtBeginDocument{\sbox\pf@boxLogo{\href{\pfSajt}{\pfLogoSlovo{4.6mm}}}%
+  \sbox\pf@boxSoc{\pfSocseti{3.8mm}}}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[C]{\begin{tikzpicture}[remember picture, overlay]
+  \pfKletka{0}{200}{150}{212}
+  \begin{scope}[shift={(current page.south west)}]
+    \draw[pfRamka, line width=0.5pt] (0,200mm) -- (150mm,200mm);
+    \node[anchor=base west, inner sep=0pt] at (11mm,204.6mm)
+      {\usebox\pf@boxLogo};
+    \node[anchor=base east, inner sep=0pt, text=pfSeryj] at (139mm,204.6mm)
+      {\pfBrendShrift\fontsize{7}{7}\selectfont \pfKolontitul};
+    \ifnum\pf@vkladka>-1\relax
+      \pgfmathsetlengthmacro\pf@vy{184mm - \pf@vkladka*14.5mm}
+      \fill[pfVkladkaCvet, rounded corners=1.6mm] (143.2mm,\pf@vy-5mm) rectangle (152mm,\pf@vy+5mm);
+      \node[text=white, inner sep=0pt] at (146.5mm,\pf@vy)
+        {\hyperlink{\pfVkladkaSsylka}{\pfBrendZhirnyj\fontsize{6.5}{6.5}\selectfont\pfGlavaKod}};
+    \fi
+  \end{scope}
+\end{tikzpicture}}
+\fancyfoot[C]{\begin{tikzpicture}[remember picture, overlay]
+  \begin{scope}[shift={(current page.south west)}]
+    \draw[pfRamka, line width=0.5pt] (11mm,11mm) -- (139mm,11mm);
+    \node[anchor=west, inner sep=0pt] at (11mm,6.2mm) {\usebox\pf@boxSoc};
+    \node[fill=pfBrend, text=white, rounded corners=1.4mm, minimum width=9mm,
+      minimum height=5mm, inner sep=0pt] at (75mm,6.2mm)
+      {\pfBrendZhirnyj\fontsize{8}{8}\selectfont\thepage};
+    \node[anchor=east, inner sep=0pt] at (139mm,6.2mm)
+      {\hyperlink{oglavlenie}{\color{pfBrendTemn}\pfBrendShrift\fontsize{7.5}{7.5}\selectfont Оглавление\,$\uparrow$}};
+  \end{scope}
+\end{tikzpicture}}
+\fancypagestyle{plain}{}
+\fancypagestyle{pfPustaya}{\fancyhf{}}
+
+% ======================================================================
+% 4. Тема, длинная тема, разбор
+% ======================================================================
+\tcbset{
+  pfTema/.style={enhanced, breakable=false,
+    colback=white, colframe=pfRamka, boxrule=0.7pt, arc=2.2mm,
+    left=3mm, right=3mm, top=2mm, bottom=2mm, halign upper=flush left,
+    colbacktitle=pfFon, coltitle=black, toptitle=1.7mm, bottomtitle=1.5mm, lefttitle=2.2mm,
+    titlerule=0pt, fonttitle=\bfseries\raggedright,
+    title={\pfChip{#1}\enspace\csuse{pf@title@#1}},
+    segmentation style={draw=pfRamka, dashed, line width=0.5pt},
+    fontlower=\footnotesize\color{pfSeryj}, halign lower=flush left,
+    before skip=4mm, after skip=4mm},
+  % длинная тема: разрывается, на продолжении — заголовок «(продолжение)», внизу части — «дальше →»
+  pfTemaDlin/.style={breakable, pad at break*=2mm,
+    title after break={\pfChip{#1}\enspace\csuse{pf@title@#1}\
+      {\mdseries\color{pfSeryj}(продолжение)}},
+    overlay unbroken and first={},
+    overlay first={\node[anchor=south east, inner sep=0pt, text=pfSeryj]
+      at ([xshift=-3mm, yshift=1.6mm]frame.south east)
+      {\pfBrendShrift\fontsize{7}{7}\selectfont продолжение на следующей странице $\rightarrow$};},
+    overlay middle={\node[anchor=south east, inner sep=0pt, text=pfSeryj]
+      at ([xshift=-3mm, yshift=1.6mm]frame.south east)
+      {\pfBrendShrift\fontsize{7}{7}\selectfont продолжение на следующей странице $\rightarrow$};},
+    bottomrule at break=0.7pt, toprule at break=0.7pt,
+    bottomsep at break=6mm},
+  pfRazbor/.style={enhanced, breakable,
+    colback=white, colframe=pfRazborRamka, boxrule=0.7pt, arc=2.2mm,
+    left=3mm, right=3mm, top=2mm, bottom=2mm, halign upper=flush left,
+    colbacktitle=pfRazborFon, coltitle=black, toptitle=1.7mm, bottomtitle=1.5mm, lefttitle=2.2mm,
+    titlerule=0pt, fonttitle=\bfseries\raggedright,
+    title={\pfChip[pfPurple]{#1}\enspace\csuse{pf@title@#1}},
+    title after break={\pfChip[pfPurple]{#1}\enspace\csuse{pf@title@#1}\
+      {\mdseries\color{pfSeryj}(продолжение)}},
+    before skip=4mm, after skip=4mm}}
+\renewcommand\pfMetaOpiraetsya{{\pfMedium Опирается на:}}
+\renewcommand\pfMetaGde{{\pfMedium Где встречается:}}
+\renewcommand\pfMetaZadaniya{{\pfMedium Задания ЕГЭ:}~№}
+
+% Ответ в разборе — плашкой
+\renewcommand\Otvet[1]{\par\smallskip\tcbox[on line, colback=pfRazborFon, colframe=pfRazborFon,
+  boxrule=0pt, arc=1mm, boxsep=0pt, left=1.5mm, right=1.5mm, top=1mm, bottom=1mm]%
+  {{\color{pfPurple}\pfMedium Ответ:}\ #1}\par}
+
+% ======================================================================
+% 5. Начало главы и задания: плашка в клетку + список тем
+% ======================================================================
+\newcommand\pf@plashka[4]{% #1 надпись сверху, #2 крупный код, #3 название, #4 список
+  \begin{tcolorbox}[enhanced, colback=white, colframe=pfRamka, boxrule=0.7pt, arc=2.2mm,
+    left=4mm, right=4mm, top=3mm, bottom=3mm, before skip=0pt, after skip=5mm,
+    underlay={\begin{scope}\clip[rounded corners=2.2mm] (frame.south west) rectangle (frame.north east);
+      \draw[pfKletka, step=5mm, line width=0.4pt] (frame.south west) grid (frame.north east);\end{scope}}]
+    {\color{pfSeryj}\pfBrendShrift\fontsize{7.5}{9}\selectfont #1}\par\vspace{2.5mm}
+    {\color{pfVkladkaCvet}\pfBrendZhirnyj\fontsize{30}{30}\selectfont #2}\hspace{3mm}%
+    \parbox[b]{0.66\linewidth}{\raggedright\pfBrendZhirnyj\fontsize{13}{15}\selectfont #3\vspace{0.6mm}}
+    \ifstrempty{#4}{}{\par\vspace{3mm}{\color{pfRamka}\hrule height 0.5pt}\vspace{2mm}%
+      {\footnotesize #4}}
+  \end{tcolorbox}}
+\renewcommand\pfGlavaVid[3]{\renewcommand\pfVkladkaSsylka{glava:\pf@g}\colorlet{pfVkladkaCvet}{pfBrend}\pf@plashka{#3}{#1}{#2}{}}
+\renewcommand\pfZadanieVid[1]{\renewcommand\pfVkladkaSsylka{zadanie:#1}\colorlet{pfVkladkaCvet}{pfPurple}%
+  \pf@plashka{Практика · разборы прототипов}{№\,#1}{Задание #1 ЕГЭ}{}}
+
+% ======================================================================
+% 6. Обложка, часть, оглавление
+% ======================================================================
+% Обложка — готовая картинка на всю страницу + кликабельные QR-коды
+\newcommand\pfOblozhka{\thispagestyle{pfPustaya}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north west, inner sep=0pt] at (current page.north west)
+      {\includegraphics[width=150mm]{stil/brend/oblozhka.png}};
+    \begin{scope}[shift={(current page.north west)}]
+      \node[anchor=north west, inner sep=0pt] at (13mm,-108.8mm)
+        {\href{\pfVK}{\phantom{\rule{24mm}{23.7mm}}}};
+      \node[anchor=north west, inner sep=0pt] at (13mm,-142.5mm)
+        {\href{\pfYouTube}{\phantom{\rule{24mm}{23.7mm}}}};
+      \node[anchor=north west, inner sep=0pt] at (13mm,-175.8mm)
+        {\href{\pfTelegram}{\phantom{\rule{24mm}{23.5mm}}}};
+    \end{scope}
+  \end{tikzpicture}\null\clearpage}
+\let\pfTitul\@gobbletwo   % отдельный титул не нужен — есть обложка
+
+% Разделитель частей: \pfChast{1}{Теория}{пояснение}
+\newcommand\pfChast[3]{\clearpage\thispagestyle{pfPustaya}%
+  \renewcommand\pfNazvanieKnigi{Часть #1. #2}\renewcommand\pfKolontitul{Часть #1. #2}%
+  \renewcommand\pfRazdel{}%
+  \pdfbookmark[0]{Часть #1. #2}{bm-chast#1}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \pfKletka{0}{0}{150}{212}
+    \begin{scope}[shift={(current page.south west)}]
+      \node[anchor=north east, inner sep=0pt] at (139mm,197mm) {\pfLogo{22mm}};
+      \node[anchor=north west, inner sep=0pt, text width=118mm, align=left] at (11mm,150mm)
+        {{\color{pfSeryj}\pfBrendShrift\fontsize{11}{13}\selectfont Часть #1}\par\vspace{2mm}
+         {\setlength{\fboxsep}{1.6mm}\colorbox{pfBrend}{\color{white}\pfBrendZhirnyj\fontsize{30}{34}\selectfont #2}}\par\vspace{6mm}
+         {\pfBrendShrift\fontsize{9}{13}\selectfont #3}};
+    \end{scope}
+  \end{tikzpicture}\null\clearpage}
+
+% Оглавление: глава (крупно) и её темы (мелко), всё кликается
+\renewcommand\pf@toc[3]{% ссылка, текст, метка страницы
+  \par\noindent\hyperlink{#1}{#2}\dotfill\hyperlink{#1}{\color{pfSeryj}\pageref*{#3}}\par}
+\newcommand\pf@tocMelko[2]{% вид, код
+  \edef\pf@y{\csuse{pf@tl@#2}}%
+  \ifcsdef{pf@have@#1:\pf@y}{%
+  {\footnotesize\leftskip=11mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
+   \hyperlink{#1:\pf@y}{{\color{pfAkcent}\pfMedium #2}\enspace\csuse{pf@title@#2}}%
+   \nobreak\leaders\hbox to 0.6em{\hss.\hss}\hskip 1em plus 1fill
+   \hyperlink{#1:\pf@y}{\color{pfSeryj}\getpagerefnumber{#1:\pf@y}}\par}}{}}
+\renewcommand\pfStrokaGlavy[1]{\edef\pf@g{\csuse{pf@gl@tl@#1}}%
+  \vspace{2.2mm}\pf@toc{glava:\pf@g}{\makebox[11mm][l]{\pfChip{#1}}{\pfMedium\csuse{pf@gl@name@#1}}}{glava:\pf@g}%
+  \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@gl@temy@#1}}%
+  \expandafter\forcsvlist\expandafter\pf@tocTema\expandafter{\pf@tmp}}
+\renewcommand\pfStrokaZadaniya[1]{%
+  \vspace{2.2mm}\pf@toc{zadanie:#1}{\makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\pfMedium Задание #1}}{zadanie:#1}%
+  \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@zad@razb@#1}}%
+  \expandafter\forcsvlist\expandafter\pf@tocRazbor\expandafter{\pf@tmp}}
+\newcommand\pf@tocTema[1]{\pf@tocMelko{tema}{#1}}
+\newcommand\pf@tocRazbor[1]{\pf@tocMelko{razbor}{#1}}
+\newcommand\pfZagolovok[1]{{\pfBrendZhirnyj\fontsize{18}{22}\selectfont #1}\par\vspace{5mm}}
+\newcommand\pfPodzagolovok[1]{\par\vspace{2mm}{\color{pfSeryj}\pfBrendShrift\fontsize{8}{10}\selectfont #1}\par\vspace{2.5mm}}
+
+% ======================================================================
+% 7. Таблицы — единый стиль
+% ======================================================================
+% \begin{pfTablica}{lcc}            шапка (первая строка) + «зебра»
+%   Длина & Площадь & Объём \\
+%   ...
+% \end{pfTablica}
+% Опции: [bez shapki] — без шапки, только «зебра»; [levo] — прижать влево.
+% Внутри: \pfPodshapka{текст} — строка-подзаголовок на всю ширину; \pfItog — итоговая строка.
+\definecolor{pfZebra}{RGB}{246,249,255}
+\newif\ifpf@shapka \newif\ifpf@levo
+\pgfkeys{/pfTab/.is family, /pfTab,
+  bez shapki/.code={\pf@shapkafalse}, levo/.code={\pf@levotrue}}
+\newcommand\pf@tabRamka{%
+  \tikz\draw[pfRamka, line width=0.6pt, rounded corners=1.8mm] (1-|1) rectangle (last-|last);}
+\NewDocumentEnvironment{pfTablica}{O{} m +b}{%
+  \pf@shapkatrue\pf@levofalse\pgfkeys{/pfTab, #1}\pf@schitajStolbcy{#3}%
+  \par\vspace{1.5mm}\begingroup\ifpf@levo\noindent\else\centering\fi\small
+  \setlength{\tabcolsep}{2.2mm}%
+  \ifpf@shapka
+    \begin{NiceTabular}{#2}[rounded-corners=1.8mm, cell-space-limits=1.1mm,
+      code-before={\rowcolor{pfFon}{1}\rowcolors{2}{white}{pfZebra}[respect-blocks]},
+      code-after={\pf@tabRamka\tikz\draw[pfRamka, line width=0.6pt] (2-|1) -- (2-|last);}]
+    \RowStyle[color=pfBrendTemn]{\pfMedium}#3
+    \end{NiceTabular}%
+  \else
+    \begin{NiceTabular}{#2}[rounded-corners=1.8mm, cell-space-limits=1.1mm,
+      code-before={\rowcolors{1}{white}{pfZebra}[respect-blocks]},
+      code-after={\pf@tabRamka}]
+    #3
+    \end{NiceTabular}%
+  \fi
+  \par\endgroup\vspace{1.5mm}}{}
+\newcommand\pfPodshapka[1]{\RowStyle[rowcolor=pfFon, color=pfBrendTemn]{\pfMedium\footnotesize}%
+  \Block[l]{1-\pf@nCol}{#1}}
+% число столбцов = максимум «&» в строке + 1 (считается по телу таблицы)
+\ExplSyntaxOn
+\seq_new:N \l__pf_rows_seq
+\seq_new:N \l__pf_cells_seq
+\int_new:N \l__pf_ncol_int
+\cs_new_protected:Npn \pf@schitajStolbcy #1 {
+  \int_set:Nn \l__pf_ncol_int {1}
+  \seq_set_split:Nnn \l__pf_rows_seq {\\} {#1}
+  \seq_map_inline:Nn \l__pf_rows_seq {
+    \seq_set_split:Nnn \l__pf_cells_seq {&} {##1}
+    \int_set:Nn \l__pf_ncol_int { \int_max:nn {\l__pf_ncol_int} {\seq_count:N \l__pf_cells_seq} } }
+  \edef\pf@nCol{\int_use:N \l__pf_ncol_int}}
+\ExplSyntaxOff
+\newcommand\pfItog{\RowStyle{\pfMedium}}
+
+% Схема Горнера: \pfGorner{корень}{коэффициенты через &}{получившиеся через &}{остаток}
+\ExplSyntaxOn
+\NewDocumentCommand\pfGorner{mmmm}{
+  \seq_set_split:Nnn \l_tmpa_seq {&} {#2}
+  \exp_args:Ne \pf@gornerTab { \seq_count:N \l_tmpa_seq } {#1}{#2}{#3}{#4}}
+\ExplSyntaxOff
+\newcommand\pf@gornerTab[5]{{\small\setlength{\arraycolsep}{2mm}%
+  $\begin{NiceArray}{>{\color{pfBrend}}c|*{#1}{c}}[cell-space-limits=1mm,
+    code-before={\rowcolor{pfFon}{2}}, rules/color=pfBrend!70, rules/width=0.7pt]
+    & #3 \\ \hline
+    #2 & #4 & \textcolor{pfBrend}{\mathbf{#5}}
+  \end{NiceArray}$}}

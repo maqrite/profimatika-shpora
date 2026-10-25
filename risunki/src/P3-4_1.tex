@@ -1,0 +1,30 @@
+% П3.4-1 — Высота прямоугольного треугольника, проведённая к гипотенузе
+\documentclass[tikz,border=3pt]{standalone}
+\input{../preamble}
+\begin{document}
+\begin{tikzpicture}[pf, scale=0.9]
+  % --- точки (правим только координаты) ---
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (6,0);
+  \coordinate (C) at (2,2.828);   % угол C прямой: C лежит на окружности с диаметром AB
+  \coordinate (H) at (2,0);       % основание высоты
+
+  % --- линии по ролям ---
+  \draw[accent] (A) -- (H) node[side,midway,below,text=pfPurple] {$b_c$};
+  \draw[accent] (H) -- (B) node[side,midway,below,text=pfPurple] {$a_c$};
+  \draw[given] (A) -- (C) node[side,midway,above left] {$b$}
+                    -- (B) node[side,midway,above right] {$a$}
+                    -- cycle;
+  \draw[main] (C) -- (H) node[side,midway,right,text=pfBlue] {$h$};
+
+  % --- прямые углы ---
+  \pic[rightang] {right angle = A--C--B};
+  \pic[rightang] {right angle = C--H--B};
+
+  % --- подписи точек ---
+  \pfPoint{A}{A}{below left}
+  \pfPoint{B}{B}{below right}
+  \pfPoint{C}{C}{above}
+  \pfPoint{H}{H}{below=4pt}
+\end{tikzpicture}
+\end{document}

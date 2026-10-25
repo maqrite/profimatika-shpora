@@ -1,0 +1,76 @@
+% profig.sty — единый стиль рисунков для шпоры Профиматики
+% Подключается и в каждом файле рисунка, и в самой книге.
+% Поменяли цвет или толщину здесь — поменялось во всех рисунках.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{stil/profig}[2026/10/25 Профиматика: стиль рисунков]
+
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{angles,quotes,calc,intersections,decorations.markings,arrows.meta}
+
+% ---------- Палитра ----------
+\definecolor{pfBlack}{RGB}{0,0,0}
+\definecolor{pfBlue}{RGB}{21,101,192}     % основное построение
+\definecolor{pfOrange}{RGB}{255,128,0}    % что ищем, главное выделение
+\definecolor{pfPurple}{RGB}{153,51,255}   % второе выделение, вспомогательное
+\definecolor{pfGreen}{RGB}{0,153,0}       % запасной
+\definecolor{pfGrid}{RGB}{225,228,233}    % клетка на графиках
+
+% ---------- Толщины линий ----------
+\newlength{\pfMain}\setlength{\pfMain}{1pt}     % основные линии
+\newlength{\pfThin}\setlength{\pfThin}{0.6pt}   % вспомогательные, дуги, засечки
+\newlength{\pfBold}\setlength{\pfBold}{1.8pt}   % выделение «что ищем»
+
+\tikzset{
+  % окружение рисунка: [pf]
+  pf/.style={line cap=round, line join=round, >={Stealth[length=5pt]}},
+  % --- роли линий ---
+  given/.style  ={draw=pfBlack,  line width=\pfMain},              % исходная фигура
+  main/.style   ={draw=pfBlue,   line width=\pfMain},              % основное построение
+  find/.style   ={draw=pfOrange, line width=\pfBold},              % что ищем
+  accent/.style ={draw=pfPurple, line width=\pfMain},              % второе выделение
+  aux/.style    ={draw=pfPurple, line width=\pfThin, dash pattern=on 3pt off 2pt}, % вспомогательное
+  extra/.style  ={draw=pfGreen,  line width=\pfMain},              % запасной цвет
+  % --- подписи ---
+  lbl/.style    ={inner sep=1.5pt, font=\normalsize},              % буквы точек
+  side/.style   ={inner sep=2pt,   font=\small},                   % подписи отрезков
+  % --- засечки равных отрезков: tick1, tick2, tick3 ---
+  tick1/.style={postaction={decorate,decoration={markings,mark=at position .5 with
+      {\draw[pfBlack,line width=\pfThin,solid] (0,-3pt)--(0,3pt);}}}},
+  tick2/.style={postaction={decorate,decoration={markings,mark=at position .5 with
+      {\draw[pfBlack,line width=\pfThin,solid] (-1.3pt,-3pt)--(-1.3pt,3pt) (1.3pt,-3pt)--(1.3pt,3pt);}}}},
+  tick3/.style={postaction={decorate,decoration={markings,mark=at position .5 with
+      {\draw[pfBlack,line width=\pfThin,solid] (-2.4pt,-3pt)--(-2.4pt,3pt) (0,-3pt)--(0,3pt) (2.4pt,-3pt)--(2.4pt,3pt);}}}},
+  % --- дуги углов (для pic {angle = A--B--C}) ---
+  ang1/.style   ={draw=pfBlack, line width=\pfThin, angle radius=4.5mm},
+  angfind/.style={draw=pfOrange, fill=pfOrange!22, line width=\pfThin, angle radius=5mm},
+  rightang/.style={draw=pfBlack, line width=\pfThin, angle radius=2.6mm},
+}
+
+% Двойная дуга угла (второй класс равных углов): \pfAngTwo{A}{B}{C}{радиус, мм}
+\newcommand{\pfAngTwo}[4]{%
+  \pic[ang1, angle radius=#4mm]       {angle = #1--#2--#3};
+  \pic[ang1, angle radius=#4mm+1.1mm] {angle = #1--#2--#3};}
+
+% Точка с подписью: \pfPoint{имя координаты}{подпись}{где подпись: above, below left, ...}
+\newcommand{\pfPoint}[3]{%
+  \fill[pfBlack] (#1) circle[radius=1.3pt];
+  \node[lbl,#3] at (#1) {$#2$};}
+
+% ---------- Графики функций ----------
+\pgfplotsset{
+  pfaxis/.style={
+    axis lines=middle,
+    axis line style={pfBlack, line width=\pfThin, -{Stealth[length=5pt]}},
+    grid=major, major grid style={pfGrid, line width=0.4pt},
+    xtick distance=1, ytick distance=1,
+    xticklabels={}, yticklabels={},           % клетка без чисел, как в ЕГЭ
+    major tick length=0pt,
+    xlabel={$x$}, ylabel={$y$},
+    xlabel style={anchor=north east}, ylabel style={anchor=north east},
+    axis equal image, clip=false,
+  },
+  pfgraph/.style={pfBlue,   line width=\pfMain, smooth, samples=120, no markers},
+  pftan/.style  ={pfOrange, line width=\pfMain, no markers},
+}

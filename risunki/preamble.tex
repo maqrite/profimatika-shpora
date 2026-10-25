@@ -1,0 +1,8 @@
+% Шапка всех рисунков: те же шрифты и стиль, что в книге.
+\def\pfFontPath{../../shrifty/}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{FiraSans}[Path=\pfFontPath, Extension=.otf,
+  UprightFont=*-Regular, ItalicFont=*-Italic, BoldFont=*-SemiBold, BoldItalicFont=*-BoldItalic]
+\setmathfont{FiraMath-Regular}[Path=\pfFontPath, Extension=.otf]
+\usepackage{stil/profig}

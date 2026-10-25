@@ -1,0 +1,18 @@
+% Книга 2. Практика — отдельным PDF.
+\documentclass[11pt]{article}
+\usepackage{stil/shpora}
+\renewcommand\pfNazvanieKnigi{Практика}
+\pfKniga{praktika}
+
+\input{sgenerirovano/meta}
+\hypersetup{pdftitle={Шпора ЕГЭ: практика}}
+
+\begin{document}
+\pfOblozhka
+\renewcommand\pfKolontitul{Оглавление}
+\phantomsection\hypertarget{oglavlenie}{}%
+\pdfbookmark[0]{Оглавление}{bm-oglavlenie}%
+\pfZagolovok{Оглавление}
+\input{sgenerirovano/oglavlenie-praktika}
+\input{sgenerirovano/praktika-soderzhanie}
+\end{document}
