@@ -1,0 +1,21 @@
+% Книга 1. Теория — отдельным PDF.
+\documentclass[11pt]{article}
+\usepackage{стиль/шпора}
+\renewcommand\pfNazvanieKnigi{Теория}
+\pfKniga{теория}
+% \pfTolkoGlavy{Ч1,А1}   % раскомментировать, чтобы собрать только эти главы
+
+\input{сгенерировано/мета}
+\hypersetup{pdftitle={Шпора ЕГЭ: теория}}
+
+\begin{document}
+\pfOblozhka
+\renewcommand\pfKolontitul{Оглавление}
+\phantomsection\hypertarget{oglavlenie}{}%
+\pdfbookmark[0]{Оглавление}{bm-oglavlenie}%
+\pfZagolovok{Оглавление}
+\input{сгенерировано/оглавление-теории}
+\input{введение/как-пользоваться}
+\input{сгенерировано/содержание-теории}
+\input{введение/указатель}
+\end{document}

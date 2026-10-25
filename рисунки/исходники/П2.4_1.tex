@@ -1,0 +1,29 @@
+% П2.4-1 — Равнобедренный треугольник: медиана к основанию
+\documentclass[tikz,border=3pt]{standalone}
+\input{../преамбула}
+\begin{document}
+\begin{tikzpicture}[pf, scale=0.9]
+  \coordinate (A) at (0,0);
+  \coordinate (C) at (5,0);
+  \coordinate (B) at (2.5,3.6);
+  \coordinate (M) at ($(A)!0.5!(C)$);   % середина AC — считается сама
+
+  \draw[given, tick1] (A) -- (B);
+  \draw[given, tick1] (B) -- (C);
+  \draw[given, tick2] (A) -- (M);
+  \draw[given, tick2] (M) -- (C);
+  \draw[main] (B) -- (M);
+
+  % равные углы при основании и равные половины угла B
+  \pic[ang1] {angle = C--A--B};
+  \pic[ang1] {angle = B--C--A};
+  \pfAngTwo{A}{B}{M}{6.5}
+  \pfAngTwo{M}{B}{C}{6.5}
+  \pic[rightang] {right angle = B--M--C};
+
+  \pfPoint{A}{A}{below left}
+  \pfPoint{C}{C}{below right}
+  \pfPoint{B}{B}{above}
+  \pfPoint{M}{M}{below=4pt}
+\end{tikzpicture}
+\end{document}

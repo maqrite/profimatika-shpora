@@ -1,0 +1,22 @@
+% <КОД>-<N> — <что на рисунке>
+% Скопируй файл в исходники/, назови по коду темы (например, П5.2_1.tex) и правь.
+\documentclass[tikz,border=3pt]{standalone}
+\input{../преамбула}
+\begin{document}
+\begin{tikzpicture}[pf, scale=0.9]
+  % --- 1. Точки: правим только координаты ---
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (4,0);
+  \coordinate (C) at (1.5,2.5);
+
+  % --- 2. Линии по ролям: given / main / find / accent / aux ---
+  \draw[given] (A) -- (B) -- (C) -- cycle;
+
+  % --- 3. Отметки: tick1/2/3 на отрезках, ang1 / \pfAngTwo / rightang на углах ---
+
+  % --- 4. Подписи точек ---
+  \pfPoint{A}{A}{below left}
+  \pfPoint{B}{B}{below right}
+  \pfPoint{C}{C}{above}
+\end{tikzpicture}
+\end{document}
