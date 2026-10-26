@@ -323,15 +323,60 @@
 \ExplSyntaxOff
 \newcommand\pfItog{\RowStyle{\pfMedium}}
 
-% Схема Горнера: \pfGorner{корень}{коэффициенты через &}{получившиеся через &}{остаток}
+% Схема Горнера: \pfGorner{корень}{коэффициенты через запятую}, например \pfGorner{3}{1,-2,5,-24}.
+% Всё считается само. Три строки: коэффициенты; произведения «предыдущее × корень»;
+% суммы (коэффициенты частного и остаток). Стрелки: вниз — «сносим», по диагонали — «× корень».
 \ExplSyntaxOn
-\NewDocumentCommand\pfGorner{mmmm}{
-  \seq_set_split:Nnn \l_tmpa_seq {&} {#2}
-  \exp_args:Ne \pf@gornerTab { \seq_count:N \l_tmpa_seq } {#1}{#2}{#3}{#4}}
+\fp_new:N \l_pf_gor_r_fp
+\tl_new:N \l_pf_gor_a_tl \tl_new:N \l_pf_gor_b_tl \tl_new:N \l_pf_gor_c_tl
+\int_new:N \l_pf_gor_n_int
+\cs_new_protected:Npn \pf_gor_tl_chislo:Nn #1#2 % дописать число (десятичная запятая)
+  { \tl_set:Ne \l_tmpb_tl { \fp_eval:n {#2} } \tl_replace_all:Nnn \l_tmpb_tl {.} {{,}}
+    \tl_put_right:NV #1 \l_tmpb_tl }
+\NewDocumentCommand\pfGorner{mm}{
+  \clist_set:Nn \l_tmpa_clist {#2}
+  \int_set:Nn \l_pf_gor_n_int { \clist_count:N \l_tmpa_clist }
+  \tl_clear:N \l_pf_gor_a_tl \tl_clear:N \l_pf_gor_b_tl \tl_clear:N \l_pf_gor_c_tl
+  \tl_set:Nn \l_pf_gor_b_tl { \textcolor{pfBrend}{\mathbf{#1}} & }
+  \fp_set:Nn \l_pf_gor_r_fp { 0 }
+  \int_step_inline:nn { \l_pf_gor_n_int }
+    {
+      \tl_put_right:Nn \l_pf_gor_a_tl { & }
+      \pf_gor_tl_chislo:Nn \l_pf_gor_a_tl { \clist_item:Nn \l_tmpa_clist {##1} }
+      \int_compare:nNnTF {##1} = {1}
+        { \fp_set:Nn \l_pf_gor_r_fp { \clist_item:Nn \l_tmpa_clist {1} } }
+        {
+          \tl_put_right:Nn \l_pf_gor_b_tl { & \color{pfSeryj} }
+          \pf_gor_tl_chislo:Nn \l_pf_gor_b_tl { (#1) * \l_pf_gor_r_fp }
+          \fp_set:Nn \l_pf_gor_r_fp { (#1) * \l_pf_gor_r_fp + (\clist_item:Nn \l_tmpa_clist {##1}) }
+        }
+      \tl_put_right:Nn \l_pf_gor_c_tl { & }
+      \int_compare:nNnTF {##1} = { \l_pf_gor_n_int }
+        { \tl_set:Ne \l_tmpb_tl { \fp_eval:n { \l_pf_gor_r_fp } }
+          \tl_replace_all:Nnn \l_tmpb_tl {.} {{,}}
+          \tl_put_right:Ne \l_pf_gor_c_tl
+            { \exp_not:N \textcolor{pfBrend}{ \exp_not:N \mathbf { \exp_not:V \l_tmpb_tl } } } }
+        { \pf_gor_tl_chislo:Nn \l_pf_gor_c_tl { \l_pf_gor_r_fp } }
+    }
+  \cs_set:Npe \pf@gornerTelo
+    {
+      \exp_not:N \begin{NiceArray}{c|*{\int_use:N \l_pf_gor_n_int}{c}}
+        [cell-space-limits=1.7mm, rules/color=pfBrend!70, rules/width=0.6pt,
+         code-after={\exp_not:N \pf@gornerStrelki{\int_use:N \l_pf_gor_n_int}{\exp_not:n {#1}}}]
+        \exp_not:V \l_pf_gor_a_tl \exp_not:N \\
+        \exp_not:V \l_pf_gor_b_tl \exp_not:N \\ \exp_not:N \hline
+        \exp_not:V \l_pf_gor_c_tl
+      \exp_not:N \end{NiceArray}
+    }
+  {\small\setlength{\arraycolsep}{2.6mm}$\pf@gornerTelo$}
+}
 \ExplSyntaxOff
-\newcommand\pf@gornerTab[5]{{\small\setlength{\arraycolsep}{2mm}%
-  $\begin{NiceArray}{>{\color{pfBrend}}c|*{#1}{c}}[cell-space-limits=1mm,
-    code-before={\rowcolor{pfFon}{2}}, rules/color=pfBrend!70, rules/width=0.7pt]
-    & #3 \\ \hline
-    #2 & #4 & \textcolor{pfBrend}{\mathbf{#5}}
-  \end{NiceArray}$}}
+\newcommand\pf@gornerStrelki[2]{\begin{tikzpicture}[>={Stealth[length=1.6mm,width=1.3mm]}]
+  % «сносим вниз»
+  \draw[->, pfBrend, line width=0.5pt, shorten <=0.6pt, shorten >=0.6pt] (1-2.south) -- (3-2.north);
+  % «× корень»: от суммы к произведению в следующем столбце
+  \foreach \j in {2,...,#1}{\pgfmathtruncatemacro\k{\j+1}%
+    \draw[->, pfOrange, line width=0.55pt, shorten <=0.8pt, shorten >=0.8pt]
+      ($(3-\j.center)!0.24!(2-\k.center)$) -- node[pos=0.55, above left, inner sep=0.3pt, font=\fontsize{5.5}{5.5}\selectfont, text=pfOrange]{$\cdot#2$}
+      ($(3-\j.center)!0.76!(2-\k.center)$);}
+\end{tikzpicture}}
