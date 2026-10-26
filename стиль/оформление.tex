@@ -180,6 +180,8 @@
     \hfill разбор\hspace{6mm}в банке}\par\vspace{1mm}}%
   \ifcsdef{pf@zadtipy@#1}{\edef\pf@tmp{\csuse{pf@zadtipy@#1}}%
     \expandafter\forcsvlist\expandafter\pf@dobavTip\expandafter{\pf@tmp}}{}%
+  \ifcsdef{r@ukazatel}{\appto\pf@sp{\par\vspace{1.5mm}\hyperlink{ukaz:#1}{\color{pfPurple}\pfMedium
+    Какие темы повторить к заданию #1\,$\rightarrow$}}}{}%
   \pf@plashka{Практика · задание #1}{№\,#1}{\ifcsdef{pf@zadname@#1}{\csuse{pf@zadname@#1}}{Задание #1}}{\pf@sp}}
 \newcommand\pf@dobavTip[1]{\appto\pf@sp{\pf@tipStroka{#1}}}
 % строка типа в плашке задания: код · название · страница разбора · ссылка в банк
