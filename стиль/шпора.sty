@@ -8,21 +8,25 @@
   top=15mm, bottom=16mm, left=11mm, right=11mm,
   headsep=5mm, footskip=9mm]{geometry}
 
-% ================= Шрифты: Fira Sans + Fira Math =================
+% ================= Шрифты: Manrope (текст) + Fira Math (формулы); Unbounded — в бренд.sty =================
+% У Manrope нет курсива: курсив делается наклоном (FakeSlant).
 \RequirePackage{fontspec}
 \RequirePackage{unicode-math}
 \providecommand\pfFontPath{шрифты/}
-\setmainfont{FiraSans}[Path=\pfFontPath, Extension=.otf,
-  UprightFont=*-Regular, ItalicFont=*-Italic,
-  BoldFont=*-SemiBold, BoldItalicFont=*-BoldItalic]
-\newfontfamily\pfMedium{FiraSans-Medium}[Path=\pfFontPath, Extension=.otf, BoldFont=FiraSans-SemiBold, ItalicFont=FiraSans-Italic]
+\setmainfont{Manrope}[Path=\pfFontPath, Extension=.ttf,
+  UprightFont=*-Regular, BoldFont=*-Bold,
+  ItalicFont=*-Regular, ItalicFeatures={FakeSlant=0.18},
+  BoldItalicFont=*-Bold, BoldItalicFeatures={FakeSlant=0.18}]
+\newfontfamily\pfMedium{Manrope}[Path=\pfFontPath, Extension=.ttf,
+  UprightFont=*-SemiBold, BoldFont=*-ExtraBold, ItalicFont=*-SemiBold, ItalicFeatures={FakeSlant=0.18}]
 \setmathfont{FiraMath-Regular}[Path=\pfFontPath, Extension=.otf]
 % Русский язык: babel (есть в Overleaf и полной TeX Live), иначе polyglossia
 \IfFileExists{russianb.ldf}
   {\RequirePackage[russian]{babel}}
   {\RequirePackage{polyglossia}\setdefaultlanguage{russian}%
-   \newfontfamily\cyrillicfont{FiraSans}[Path=\pfFontPath, Extension=.otf,
-     UprightFont=*-Regular, ItalicFont=*-Italic, BoldFont=*-SemiBold, BoldItalicFont=*-BoldItalic]}
+   \newfontfamily\cyrillicfont{Manrope}[Path=\pfFontPath, Extension=.ttf,
+     UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Regular, ItalicFeatures={FakeSlant=0.18},
+     BoldItalicFont=*-Bold, BoldItalicFeatures={FakeSlant=0.18}]}
 \linespread{1.08}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{3pt plus 1pt}

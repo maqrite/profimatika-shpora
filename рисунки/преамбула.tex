@@ -2,7 +2,9 @@
 \def\pfFontPath{../../шрифты/}
 \usepackage{fontspec}
 \usepackage{unicode-math}
-\setmainfont{FiraSans}[Path=\pfFontPath, Extension=.otf,
-  UprightFont=*-Regular, ItalicFont=*-Italic, BoldFont=*-SemiBold, BoldItalicFont=*-BoldItalic]
+\setmainfont{Manrope}[Path=\pfFontPath, Extension=.ttf,
+  UprightFont=*-Regular, BoldFont=*-Bold,
+  ItalicFont=*-Regular, ItalicFeatures={FakeSlant=0.18},
+  BoldItalicFont=*-Bold, BoldItalicFeatures={FakeSlant=0.18}]
 \setmathfont{FiraMath-Regular}[Path=\pfFontPath, Extension=.otf]
 \usepackage{стиль/рисунки}

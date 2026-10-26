@@ -7,16 +7,18 @@
 \RequirePackage{qrcode}
 
 % ================= Цвета бренда =================
-\definecolor{pfBrend}{RGB}{64,152,254}      % фирменный голубой (логотип, обложка)
+\definecolor{pfBrend}{RGB}{0,154,255}       % фирменный голубой — цвет φ в логотипе
 \definecolor{pfBrendTemn}{RGB}{21,101,192}  % тёмный синий: текст ссылок (= синий рисунков)
 \definecolor{pfBrendSvet}{RGB}{231,242,255} % светлая подложка
 \definecolor{pfKletka}{RGB}{232,237,244}    % «тетрадная клетка»
 
-% ================= Шрифт бренда: Montserrat — для заголовков и колонтитулов =================
-\newfontfamily\pfBrendShrift{Montserrat}[Path=\pfFontPath, Extension=.otf,
-  UprightFont=*-Medium, BoldFont=*-Bold]
-\newfontfamily\pfBrendZhirnyj{Montserrat}[Path=\pfFontPath, Extension=.otf,
-  UprightFont=*-ExtraBold, BoldFont=*-ExtraBold]
+% ================= Шрифты бренда =================
+% Unbounded — крупные фирменные надписи: «Теория», «Ч1», заголовки разделов, плашки-коды.
+% Manrope — мелкие надписи в колонтитулах.
+\newfontfamily\pfBrendShrift{Manrope}[Path=\pfFontPath, Extension=.ttf,
+  UprightFont=*-SemiBold, BoldFont=*-Bold]
+\newfontfamily\pfBrendZhirnyj{Unbounded}[Path=\pfFontPath, Extension=.ttf,
+  UprightFont=*-Bold, BoldFont=*-ExtraBold]
 
 % ================= Ссылки =================
 \newcommand\pfSajt{https://profimatika.ru}
@@ -29,11 +31,9 @@
 \newcommand\pfVideoKot{https://youtu.be/BJwfdinPEoc} % куда ведёт кот «тык» внизу страницы
 
 % ================= Логотип =================
-% Сейчас — векторизован из присланной картинки «профиматика» (временно, края мягкие).
-% Когда дизайнеры пришлют оригиналы — положить в стиль/бренд/:
-%   logo-slovo.pdf  — словесный знак «профиматика»;
-%   logo-fi.pdf     — отдельная буква φ.
-% Файлы подхватятся сами, ничего больше менять не нужно.
+% Оригиналы: стиль/бренд/логотип.pdf (словесный знак) и фи.pdf (буква φ) — вектор,
+% обведённый по присланному логотипу. Замена — положить файлы с теми же именами.
+% Если файлов нет, рисуется старый контур из логотип-контур.tex.
 \input{стиль/бренд/логотип-контур.tex}
 \newcommand\pf@risuj[5]{% #1 путь, #2 цвет, #3 высота, #4 высота в ед. пути, #5 сдвиг
   \begingroup\pgfmathsetlengthmacro\pf@u{(#3)/#4}%
@@ -43,9 +43,10 @@
 \newcommand\pfLogo[2][pfBrend]{%
   \IfFileExists{стиль/бренд/фи.pdf}{\includegraphics[height=#2]{стиль/бренд/фи.pdf}}%
     {\pf@risuj{\pfLogoFiPath}{#1}{#2}{39}{(-187,-12)}}}
-% \pfLogoSlovo[цвет букв][цвет φ]{высота} — «профиматика»
+% \pfLogoSlovo[цвет букв][цвет φ]{высота} — «профиматика»; высота — от верха φ до низа «р»,
+% стоит на базовой линии (хвосты «р» и «φ» уходят вниз, это 33 % высоты)
 \NewDocumentCommand\pfLogoSlovo{O{black} O{pfBrend} m}{%
-  \IfFileExists{стиль/бренд/логотип.pdf}{\includegraphics[height=#3]{стиль/бренд/логотип.pdf}}%
+  \IfFileExists{стиль/бренд/логотип.pdf}{\raisebox{-0.33\dimexpr#3\relax}{\includegraphics[height=#3]{стиль/бренд/логотип.pdf}}}%
     {\begingroup\pgfmathsetlengthmacro\pf@u{(#3)/40}\pgfmathsetlengthmacro\pf@b{14*\pf@u}%
      \edef\pf@do{\noexpand\tikz[x=\pf@u, y=\pf@u, baseline=\pf@b]{
        \noexpand\fill[#1, even odd rule, shift={(-96,-11)}] \pfLogoSlovoPath;

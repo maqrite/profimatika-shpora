@@ -244,16 +244,16 @@
 \newcommand\pf@tocMelko[2]{% вид, код
   \edef\pf@y{\csuse{pf@tl@#2}}%
   \ifcsdef{pf@have@#1:\pf@y}{%
-  {\footnotesize\leftskip=11mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
+  {\footnotesize\leftskip=14mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
    \hyperlink{#1:\pf@y}{{\color{pfAkcent}\pfMedium #2}\enspace\csuse{pf@title@#2}}%
    \nobreak\leaders\hbox to 0.6em{\hss.\hss}\hskip 1em plus 1fill
    \hyperlink{#1:\pf@y}{\color{pfSeryj}\getpagerefnumber{#1:\pf@y}}\par}}{}}
 \renewcommand\pfStrokaGlavy[1]{\edef\pf@g{\csuse{pf@gl@tl@#1}}%
-  \vspace{2.2mm}\pf@toc{glava:\pf@g}{\makebox[11mm][l]{\pfChip{#1}}{\pfMedium\csuse{pf@gl@name@#1}}}{glava:\pf@g}%
+  \vspace{2.2mm}\pf@toc{glava:\pf@g}{\makebox[14mm][l]{\pfChip{#1}}{\pfMedium\csuse{pf@gl@name@#1}}}{glava:\pf@g}%
   \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@gl@temy@#1}}%
   \expandafter\forcsvlist\expandafter\pf@tocTema\expandafter{\pf@tmp}}
 \renewcommand\pfStrokaZadaniya[1]{%
-  \vspace{2.2mm}\pf@toc{zadanie:#1}{\makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\pfMedium
+  \vspace{2.2mm}\pf@toc{zadanie:#1}{\makebox[14mm][l]{\pfChip[pfPurple]{№\,#1}}{\pfMedium
     \ifcsdef{pf@zadname@#1}{\csuse{pf@zadname@#1}}{Задание #1}}}{zadanie:#1}%
   \vspace{0.8mm}\edef\pf@tmp{\csuse{pf@zad@tipy@#1}}%
   \expandafter\forcsvlist\expandafter\pf@tocTip\expandafter{\pf@tmp}}
@@ -269,8 +269,8 @@
 \renewcommand\pfUkNavigaciya[1]{%
   \begin{multicols}{2}\raggedcolumns\forcsvlist{\pfUkStrokaNav}{#1}\end{multicols}\vspace{3mm}}
 \renewcommand\pfUkStrokaNav[1]{\par\noindent\parbox[t]{\linewidth}{\raggedright
-  \hangindent=11mm\hangafter=1\hyperlink{ukaz:#1}{%
-  \makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\small\csuse{pf@zadname@#1}}}}\par\vspace{1.6mm}}
+  \hangindent=14mm\hangafter=1\hyperlink{ukaz:#1}{%
+  \makebox[14mm][l]{\pfChip[pfPurple]{№\,#1}}{\small\csuse{pf@zadname@#1}}}}\par\vspace{1.6mm}}
 \renewcommand\pfUkazatel[2]{\par\Needspace{32mm}\vspace{3mm}\phantomsection\hypertarget{ukaz:#1}{}%
   \begin{tcolorbox}[enhanced, colback=white, colframe=pfRamka, boxrule=0.7pt, arc=2.2mm,
     left=3mm, right=3mm, top=1.8mm, bottom=1.8mm, before skip=0pt, after skip=2mm,
@@ -283,11 +283,11 @@
   #2\par}
 \renewcommand\pfUkGlava[2]{\par\Needspace{14mm}\vspace{1.6mm}\noindent
   \edef\pf@g{\csuse{pf@gl@tl@#1}}%
-  \makebox[11mm][l]{\pf@ukChipSvet{#1}}%
+  \makebox[14mm][l]{\pf@ukChipSvet{#1}}%
   \ifcsdef{r@glava:\pf@g}{\hyperlink{glava:\pf@g}{\pfMedium\small\csuse{pf@gl@name@#1}}}{{\pfMedium\small\csuse{pf@gl@name@#1}}}%
   \par\vspace{0.5mm}#2}
 \renewcommand\pfUkTema[2]{\edef\pf@x{\csuse{pf@tl@#1}}%
-  {\footnotesize\leftskip=11mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
+  {\footnotesize\leftskip=14mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
   \ifcsdef{pf@have@tema:\pf@x}%
     {\hyperlink{tema:\pf@x}{{\color{pfAkcent}\pfMedium #1}\enspace\csuse{pf@title@#1}}%
      \nobreak\leaders\hbox to 0.6em{\hss.\hss}\hskip 1em plus 1fill
