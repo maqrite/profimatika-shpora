@@ -45,10 +45,30 @@
 \newcommand\pfVkladkaSsylka{}   % куда ведёт вкладка (начало главы / задания)
 \colorlet{pfVkladkaCvet}{pfBrend} % теория — голубая, практика — фиолетовая
 
-% Логотип и иконки собираются заранее в боксы (вложенный tikz в колонтитуле ломает позицию)
-\newsavebox\pf@boxLogo \newsavebox\pf@boxSoc
-\AtBeginDocument{\sbox\pf@boxLogo{\href{\pfSajt}{\pfLogoSlovo{4.6mm}}}%
-  \sbox\pf@boxSoc{\pfSocseti{3.8mm}}}
+% Логотип и иконки собираются заранее в боксы (вложенный tikz в колонтитуле ломает позицию).
+% Ссылки (\href) ставятся уже в колонтитуле вокруг бокса: \href внутри \sbox до \begin{document} не работает.
+\newsavebox\pf@boxLogo \newsavebox\pf@boxTg \newsavebox\pf@boxYt \newsavebox\pf@boxVk
+\newcommand\pfRazmerIkonok{5.4mm}
+\AtBeginDocument{\sbox\pf@boxLogo{\pfLogoSlovo{4.6mm}}%
+  \sbox\pf@boxTg{\pfIkonka{telegram}{\pfRazmerIkonok}}%
+  \sbox\pf@boxYt{\pfIkonka{youtube}{\pfRazmerIkonok}}%
+  \sbox\pf@boxVk{\pfIkonka{vk}{\pfRazmerIkonok}}}
+% Внешняя ссылка на бокс без текста (рисунок, иконка). Обычный \href в XeLaTeX ставит
+% ссылку только поверх букв и линеек, а у tikz-рисунка их нет — поэтому аннотация явная.
+\newcommand\pf@hrefBoks[2]{% #1 адрес, #2 бокс
+  \leavevmode\special{pdf:ann width \the\wd#2\space height \the\ht#2\space depth \the\dp#2\space
+    <</Type/Annot/Subtype/Link/Border[0 0 0]/A<</S/URI/URI(#1)>>>>}\usebox#2}
+% Невидимая кликабельная область w×h (например, поверх QR-кода на обложке)
+\newcommand\pf@hrefOblast[3]{% #1 адрес, #2 ширина, #3 высота
+  \leavevmode\special{pdf:ann width \the\dimexpr#2\relax\space height \the\dimexpr#3\relax\space depth 0pt
+    <</Type/Annot/Subtype/Link/Border[0 0 0]/A<</S/URI/URI(#1)>>>>}%
+  \hbox to #2{\vrule width 0pt height #3\hss}}
+% Низ слева: кот «тык» и кликабельные соцсети
+\newcommand\pf@nizSoc{%
+  \raisebox{-0.5\height}{\includegraphics[height=8mm]{стиль/бренд/кот-тык.png}}\hspace{1.6mm}%
+  \raisebox{-0.5\height}{\pf@hrefBoks{\pfTelegram}\pf@boxTg\hspace{1.8mm}%
+    \pf@hrefBoks{\pfYouTube}\pf@boxYt\hspace{1.8mm}%
+    \pf@hrefBoks{\pfVK}\pf@boxVk}}
 
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
@@ -57,7 +77,7 @@
   \begin{scope}[shift={(current page.south west)}]
     \draw[pfRamka, line width=0.5pt] (0,200mm) -- (150mm,200mm);
     \node[anchor=base west, inner sep=0pt] at (11mm,204.6mm)
-      {\usebox\pf@boxLogo};
+      {\pf@hrefBoks{\pfSajt}\pf@boxLogo};
     \node[anchor=base east, inner sep=0pt, text=pfSeryj] at (139mm,204.6mm)
       {\pfBrendShrift\fontsize{7}{7}\selectfont \pfKolontitul};
     \ifnum\pf@vkladka>-1\relax
@@ -71,7 +91,7 @@
 \fancyfoot[C]{\begin{tikzpicture}[remember picture, overlay]
   \begin{scope}[shift={(current page.south west)}]
     \draw[pfRamka, line width=0.5pt] (11mm,11mm) -- (139mm,11mm);
-    \node[anchor=west, inner sep=0pt] at (11mm,6.2mm) {\usebox\pf@boxSoc};
+    \node[anchor=west, inner sep=0pt] at (10mm,5.8mm) {\pf@nizSoc};
     \node[fill=pfBrend, text=white, rounded corners=1.4mm, minimum width=9mm,
       minimum height=5mm, inner sep=0pt] at (75mm,6.2mm)
       {\pfBrendZhirnyj\fontsize{8}{8}\selectfont\thepage};
@@ -190,11 +210,11 @@
       {\includegraphics[width=150mm]{стиль/бренд/обложка.png}};
     \begin{scope}[shift={(current page.north west)}]
       \node[anchor=north west, inner sep=0pt] at (13mm,-108.8mm)
-        {\href{\pfVK}{\phantom{\rule{24mm}{23.7mm}}}};
+        {\pf@hrefOblast{\pfVK}{24mm}{23.7mm}};
       \node[anchor=north west, inner sep=0pt] at (13mm,-142.5mm)
-        {\href{\pfYouTube}{\phantom{\rule{24mm}{23.7mm}}}};
+        {\pf@hrefOblast{\pfYouTube}{24mm}{23.7mm}};
       \node[anchor=north west, inner sep=0pt] at (13mm,-175.8mm)
-        {\href{\pfTelegram}{\phantom{\rule{24mm}{23.5mm}}}};
+        {\pf@hrefOblast{\pfTelegram}{24mm}{23.5mm}};
     \end{scope}
   \end{tikzpicture}\null\clearpage}
 \let\pfTitul\@gobbletwo   % отдельный титул не нужен — есть обложка
