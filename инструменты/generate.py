@@ -240,14 +240,20 @@ def main():
     write("оглавление-практики.tex", L)
 
     # ---------- Указатель «задание → темы» ----------
-    by_task = defaultdict(list)
+    # Для каждого задания — темы, сгруппированные по главам (в порядке шпоры):
+    # \pfUkazatel{8}{\pfUkGlava{Ч1}{\pfUkTema{Ч1.1}{1}, ...}\pfUkGlava{А1}{...}}
+    by_task = defaultdict(lambda: defaultdict(list))
     for t in sorted(topics, key=lambda t: t["order"]):
         for n in codes(t["tasks"]):
             if n.isdigit():
-                by_task[int(n)].append(t["code"])
+                ch, _, num = t["code"].rpartition(".")
+                by_task[int(n)][ch].append((t["code"], num))
     L = ["% СГЕНЕРИРОВАНО"]
     for n in sorted(by_task):
-        L.append(r"\pfUkazatel{%d}{%s}" % (n, ", ".join(r"\trefk{%s}" % c for c in by_task[n])))
+        glavy = "".join(
+            r"\pfUkGlava{%s}{%s}" % (ch, ", ".join(r"\pfUkTema{%s}{%s}" % c for c in lst))
+            for ch, lst in by_task[n].items())
+        L.append(r"\pfUkazatel{%d}{%s}" % (n, glavy))
     write("указатель.tex", L)
 
     print(f"Тем: {len(topics)}, глав: {len(chapters)}, разборов: {len(razbory)}, "

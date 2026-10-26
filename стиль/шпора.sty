@@ -159,11 +159,32 @@
   \renewcommand\pfGlavaKod{#1}\edef\pfRazdel{\csuse{pf@gl@sec@#1}}%
   \phantomsection\label{glava:\pf@g}\hypertarget{glava:\pf@g}{}%
   \pdfbookmark[1]{#1. \csuse{pf@gl@name@#1}}{bm-glava-\pf@g}%
-  \pfGlavaVid{#1}{\csuse{pf@gl@name@#1}}{\csuse{pf@gl@sec@#1}}}
+  \pfGlavaNastrojka
+  % Плашку главы не выводим сразу: первая тема решит, какой она будет.
+  % Если первая тема влезает под полную плашку — полная; если нет — компактная
+  % полоска, чтобы плашка не осталась одна на пустой странице.
+  \edef\pf@plArgs{{#1}{\csuse{pf@gl@name@#1}}{\csuse{pf@gl@sec@#1}}}%
+  \global\pf@plashkaZhdettrue}
+\newif\ifpf@plashkaZhdet
+\newbox\pf@plbox
+\newcommand\pfGlavaNastrojka{}
+\newcommand\pf@vyvestiPlashku{\ifpf@plashkaZhdet\global\pf@plashkaZhdetfalse
+  \expandafter\pfGlavaVid\pf@plArgs\fi}
+% Плашка не должна потеряться, если после главы нет тем
+\AddToHook{cmd/clearpage/before}{\pf@vyvestiPlashku}
+\AtEndDocument{\pf@vyvestiPlashku}
+% Вызывается в начале темы: полная или компактная плашка (#1 — высота темы)
+\newcommand\pf@plashkaPeredTemoj[1]{\ifpf@plashkaZhdet\global\pf@plashkaZhdetfalse
+  \setbox\pf@plbox=\vbox{\hsize=\linewidth\expandafter\pfGlavaVid\pf@plArgs}%
+  \ifdim\dimexpr\ht\pf@plbox+\dp\pf@plbox+#1\relax>\textheight
+    \ifdim#1>\textheight\expandafter\pfGlavaVid\pf@plArgs
+    \else\typeout{PF-KOMPAKTNAYA-PLASHKA: \pfGlavaKod}\expandafter\pfGlavaVidMal\pf@plArgs\fi
+  \else\expandafter\pfGlavaVid\pf@plArgs\fi\fi}
 % Как выглядит начало главы (переопределяется в стиль/оформление/*.tex)
 \newcommand\pfGlavaVid[3]{%
   {\color{pfSeryj}\small #3}\par\vspace{1mm}
   {\pfChip{\Large #1}\enspace{\Large\bfseries #2}}\par\vspace{5mm}}
+\newcommand\pfGlavaVidMal[3]{{\pfChip{#1}\enspace{\bfseries #2}}\par\vspace{3mm}}
 
 % ================= Тема =================
 % Тема — одна плашка. Если плашка влезает на страницу — она не разрывается
@@ -204,6 +225,7 @@
   \setbox\pf@izmbox=\vbox{\hsize=\linewidth
     \begin{tcolorbox}[pfTema={#1}, before skip=0pt, after skip=0pt]#2\pf@temaNiz\end{tcolorbox}}%
   \pf@izmfalse
+  \pf@plashkaPeredTemoj{\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax}%
   \ifdim\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax>\textheight
     \typeout{PF-DLINNAYA: #1}%
     \par\ifdim\dimexpr\pagegoal-\pagetotal\relax<0.5\textheight\clearpage\fi
@@ -245,7 +267,11 @@
 \newcommand\pfStrokaGlavy[1]{\edef\pf@g{\csuse{pf@gl@tl@#1}}%
   \pf@toc{glava:\pf@g}{\pfKod{#1}\enspace\csuse{pf@gl@name@#1}}{glava:\pf@g}}
 \newcommand\pfStrokaZadaniya[1]{\pf@toc{zadanie:#1}{\pfKod{№\,#1}\enspace Задание #1}{zadanie:#1}}
-\newcommand\pfUkazatel[2]{\par\noindent\hangindent=3em\makebox[3em][l]{\pfMedium №\,#1}#2\par\vspace{1mm}}
+% Указатель «задание → темы»: \pfUkazatel{n}{\pfUkGlava{глава}{\pfUkTema{код}{номер}, …}…}
+\newcommand\pfUkazatel[2]{\par\noindent{\pfMedium №\,#1 \csuse{pf@zadname@#1}}\par#2\par\vspace{2mm}}
+\newcommand\pfUkGlava[2]{\par\noindent\hspace*{1em}#1 \csuse{pf@gl@name@#1}: #2\par}
+\newcommand\pfUkTema[2]{\edef\pf@x{\csuse{pf@tl@#1}}%
+  \ifcsdef{pf@have@tema:\pf@x}{\hyperlink{tema:\pf@x}{\pfKod{#2}}}{\textcolor{pfSeryj}{#2}}}
 
 \newcommand\pfTitul[2]{% заголовок книги, подзаголовок
   \thispagestyle{empty}\vspace*{30mm}
