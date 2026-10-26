@@ -241,17 +241,19 @@ def main():
 
     # ---------- Указатель «задание → темы» ----------
     # Для каждого задания — темы, сгруппированные по главам (в порядке шпоры):
-    # \pfUkazatel{8}{\pfUkGlava{Ч1}{\pfUkTema{Ч1.1}{1}, ...}\pfUkGlava{А1}{...}}
+    # \pfUkNavigaciya{1,2,...} — список заданий со ссылками (сюда ведёт «Задания ↑» внизу страниц)
+    # \pfUkazatel{8}{\pfUkGlava{Ч1}{\pfUkTema{Ч1.1}{1}...}\pfUkGlava{А1}{...}}
     by_task = defaultdict(lambda: defaultdict(list))
     for t in sorted(topics, key=lambda t: t["order"]):
         for n in codes(t["tasks"]):
             if n.isdigit():
                 ch, _, num = t["code"].rpartition(".")
                 by_task[int(n)][ch].append((t["code"], num))
-    L = ["% СГЕНЕРИРОВАНО"]
+    L = ["% СГЕНЕРИРОВАНО",
+         r"\pfUkNavigaciya{%s}" % ",".join(str(n) for n in sorted(by_task))]
     for n in sorted(by_task):
         glavy = "".join(
-            r"\pfUkGlava{%s}{%s}" % (ch, ", ".join(r"\pfUkTema{%s}{%s}" % c for c in lst))
+            r"\pfUkGlava{%s}{%s}" % (ch, "".join(r"\pfUkTema{%s}{%s}" % c for c in lst))
             for ch, lst in by_task[n].items())
         L.append(r"\pfUkazatel{%d}{%s}" % (n, glavy))
     write("указатель.tex", L)

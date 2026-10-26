@@ -267,11 +267,18 @@
 \newcommand\pfStrokaGlavy[1]{\edef\pf@g{\csuse{pf@gl@tl@#1}}%
   \pf@toc{glava:\pf@g}{\pfKod{#1}\enspace\csuse{pf@gl@name@#1}}{glava:\pf@g}}
 \newcommand\pfStrokaZadaniya[1]{\pf@toc{zadanie:#1}{\pfKod{№\,#1}\enspace Задание #1}{zadanie:#1}}
-% Указатель «задание → темы»: \pfUkazatel{n}{\pfUkGlava{глава}{\pfUkTema{код}{номер}, …}…}
-\newcommand\pfUkazatel[2]{\par\noindent{\pfMedium №\,#1 \csuse{pf@zadname@#1}}\par#2\par\vspace{2mm}}
-\newcommand\pfUkGlava[2]{\par\noindent\hspace*{1em}#1 \csuse{pf@gl@name@#1}: #2\par}
-\newcommand\pfUkTema[2]{\edef\pf@x{\csuse{pf@tl@#1}}%
-  \ifcsdef{pf@have@tema:\pf@x}{\hyperlink{tema:\pf@x}{\pfKod{#2}}}{\textcolor{pfSeryj}{#2}}}
+% Указатель «задание → темы» (в конце книги). Внешний вид — в стиль/оформление.tex.
+% \pfUkNavigaciya{1,2,…} — список заданий; \pfUkazatel{n}{\pfUkGlava{глава}{\pfUkTema{код}{номер}…}…}
+\RequirePackage{needspace}
+\newcommand\pfUkNavigaciya[1]{\forcsvlist{\pfUkStrokaNav}{#1}}
+\newcommand\pfUkStrokaNav[1]{\par\noindent\hyperlink{ukaz:#1}{№\,#1 \csuse{pf@zadname@#1}}}
+\newcommand\pfUkazatel[2]{\par\Needspace{30mm}\phantomsection\hypertarget{ukaz:#1}{}%
+  \noindent{\pfMedium №\,#1 \csuse{pf@zadname@#1}}\par#2\par\vspace{3mm}}
+\newcommand\pfUkGlava[2]{\par\Needspace{12mm}\noindent #1 \csuse{pf@gl@name@#1}\par#2}
+\newcommand\pfUkTema[2]{\edef\pf@x{\csuse{pf@tl@#1}}\par\noindent\hspace*{1em}%
+  \ifcsdef{pf@have@tema:\pf@x}{\hyperlink{tema:\pf@x}{#1 \csuse{pf@title@#1}}}{#1 \csuse{pf@title@#1}}\par}
+% Есть ли в книге указатель (для ссылки «Задания» внизу страницы)
+\newcommand\pfEsliUkazatel[1]{\ifcsdef{r@ukazatel}{#1}{}}
 
 \newcommand\pfTitul[2]{% заголовок книги, подзаголовок
   \thispagestyle{empty}\vspace*{30mm}

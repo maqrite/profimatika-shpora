@@ -76,7 +76,9 @@
       minimum height=5mm, inner sep=0pt] at (75mm,6.2mm)
       {\pfBrendZhirnyj\fontsize{8}{8}\selectfont\thepage};
     \node[anchor=east, inner sep=0pt] at (139mm,6.2mm)
-      {\hyperlink{oglavlenie}{\color{pfBrendTemn}\pfBrendShrift\fontsize{7.5}{7.5}\selectfont Оглавление\,$\uparrow$}};
+      {\pfBrendShrift\fontsize{7.5}{7.5}\selectfont\color{pfBrendTemn}%
+       \pfEsliUkazatel{\hyperlink{ukazatel}{Задания ЕГЭ\,$\uparrow$}\hspace{4mm}}%
+       \hyperlink{oglavlenie}{Оглавление\,$\uparrow$}};
   \end{scope}
 \end{tikzpicture}}
 \fancypagestyle{plain}{}
@@ -237,26 +239,38 @@
 \newcommand\pfZagolovok[1]{{\pfBrendZhirnyj\fontsize{18}{22}\selectfont #1}\par\vspace{5mm}}
 \newcommand\pfPodzagolovok[1]{\par\vspace{2mm}{\color{pfSeryj}\pfBrendShrift\fontsize{8}{10}\selectfont #1}\par\vspace{2.5mm}}
 
-% Указатель «задание → темы»: карточка на задание, внутри — главы, справа номера тем
+% Указатель «задание → темы»: список заданий, потом по каждому — главы и темы со страницами
 \newcommand\pf@ukChipSvet[1]{\tcbox[on line, colback=pfFon, colupper=pfAkcent, boxrule=0pt,
   arc=1mm, boxsep=0pt, left=1.2mm, right=1.2mm, top=0.75mm, bottom=0.6mm]%
   {\pfBrendZhirnyj\fontsize{8}{8}\selectfont #1}}
-\renewcommand\pfUkazatel[2]{\par\noindent
-  \begin{tcolorbox}[enhanced, colback=white, colframe=pfRamka, boxrule=0.6pt, arc=2mm,
-    left=3mm, right=3mm, top=2mm, bottom=2mm, before skip=0pt, after skip=2.5mm,
-    breakable=false]
-    \noindent\pfChip[pfPurple]{№\,#1}\enspace{\pfMedium\csuse{pf@zadname@#1}}%
-    \ifcsdef{r@zadanie:#1}{\hfill\hyperlink{zadanie:#1}{\footnotesize\color{pfPurple}разборы, с.\,\getpagerefnumber{zadanie:#1}}}{}%
-    \par\vspace{1.2mm}{\color{pfRamka}\hrule height 0.4pt}\vspace{1mm}
-    {\small #2}
-  \end{tcolorbox}}
-\renewcommand\pfUkGlava[2]{%
-  \par\noindent\hangindent=10mm\hangafter=1\rightskip=0pt plus 1fil\parfillskip=0pt
-  \makebox[10mm][l]{\pf@ukChipSvet{#1}}%
+\renewcommand\pfUkNavigaciya[1]{%
+  \begin{multicols}{2}\raggedcolumns\forcsvlist{\pfUkStrokaNav}{#1}\end{multicols}\vspace{3mm}}
+\renewcommand\pfUkStrokaNav[1]{\par\noindent\parbox[t]{\linewidth}{\raggedright
+  \hangindent=11mm\hangafter=1\hyperlink{ukaz:#1}{%
+  \makebox[11mm][l]{\pfChip[pfPurple]{№\,#1}}{\small\csuse{pf@zadname@#1}}}}\par\vspace{1.6mm}}
+\renewcommand\pfUkazatel[2]{\par\Needspace{32mm}\vspace{3mm}\phantomsection\hypertarget{ukaz:#1}{}%
+  \begin{tcolorbox}[enhanced, colback=white, colframe=pfRamka, boxrule=0.7pt, arc=2.2mm,
+    left=3mm, right=3mm, top=1.8mm, bottom=1.8mm, before skip=0pt, after skip=2mm,
+    underlay={\begin{scope}\clip[rounded corners=2.2mm] (frame.south west) rectangle (frame.north east);
+      \draw[pfKletka, step=5mm, line width=0.4pt] (frame.south west) grid (frame.north east);\end{scope}}]
+    \pfChip[pfPurple]{№\,#1}\enspace{\pfBrendZhirnyj\fontsize{10.5}{12}\selectfont\csuse{pf@zadname@#1}}%
+    \hfill\hyperlink{ukazatel}{\color{pfBrendTemn}\pfBrendShrift\fontsize{7}{7}\selectfont к списку заданий\,$\uparrow$}%
+    \ifcsdef{r@zadanie:#1}{\par\vspace{0.6mm}\hyperlink{zadanie:#1}{\footnotesize\color{pfPurple}разборы задания, с.\,\getpagerefnumber{zadanie:#1}}}{}%
+  \end{tcolorbox}
+  #2\par}
+\renewcommand\pfUkGlava[2]{\par\Needspace{14mm}\vspace{1.6mm}\noindent
   \edef\pf@g{\csuse{pf@gl@tl@#1}}%
-  \ifcsdef{r@glava:\pf@g}{\hyperlink{glava:\pf@g}{\csuse{pf@gl@name@#1}}}{\csuse{pf@gl@name@#1}}%
-  \nobreak\leaders\hbox to 0.6em{\hss\textcolor{pfRamka}{.}\hss}\hskip 1em plus 1fill
-  {\color{pfSeryj}\footnotesize темы}\ #2\par\vspace{0.4mm}}
+  \makebox[11mm][l]{\pf@ukChipSvet{#1}}%
+  \ifcsdef{r@glava:\pf@g}{\hyperlink{glava:\pf@g}{\pfMedium\small\csuse{pf@gl@name@#1}}}{{\pfMedium\small\csuse{pf@gl@name@#1}}}%
+  \par\vspace{0.5mm}#2}
+\renewcommand\pfUkTema[2]{\edef\pf@x{\csuse{pf@tl@#1}}%
+  {\footnotesize\leftskip=11mm\rightskip=0pt plus 1fil\parfillskip=0pt\noindent
+  \ifcsdef{pf@have@tema:\pf@x}%
+    {\hyperlink{tema:\pf@x}{{\color{pfAkcent}\pfMedium #1}\enspace\csuse{pf@title@#1}}%
+     \nobreak\leaders\hbox to 0.6em{\hss.\hss}\hskip 1em plus 1fill
+     \hyperlink{tema:\pf@x}{\color{pfSeryj}\getpagerefnumber{tema:\pf@x}}}%
+    {{\color{pfSeryj}\pfMedium #1}\enspace{\color{pfSeryj}\csuse{pf@title@#1}}\hfill\null}%
+  \par}}
 
 % ======================================================================
 % 7. Таблицы — единый стиль
