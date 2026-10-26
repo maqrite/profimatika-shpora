@@ -45,7 +45,6 @@
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{fancyhdr}
 \RequirePackage{refcount}
-\RequirePackage{xr-hyper}
 \RequirePackage[hidelinks, bookmarksnumbered=false, bookmarksopen=true,
   pdfdisplaydoctitle=true, pdfpagelayout=OneColumn]{hyperref}
 \RequirePackage{стиль/бренд}             % логотип, ссылки, соцсети, фирменные цвета
@@ -71,12 +70,7 @@
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\color{pfSeryj}\thepage}}
 
 % ================= Варианты сборки =================
-% \pfKniga{теория} | \pfKniga{практика} | \pfKniga{одна}
 \newcommand\pfNazvanieKnigi{Шпора ЕГЭ · профиль}
-\newcommand\pfKniga[1]{\def\pf@kniga{#1}%
-  \ifstrequal{#1}{теория}{\externaldocument[EXT-]{практика}}{}%
-  \ifstrequal{#1}{практика}{\externaldocument[EXT-]{теория}}{}}
-\def\pf@kniga{одна}
 
 % Собрать только часть глав (для пилота): \pfTolkoGlavy{Ч1,А1}
 \def\pf@tolko{}
@@ -102,17 +96,15 @@
 
 % ================= Ссылки по кодам =================
 % \tref{П3.1} — на тему, \rref{Р16-01} — на разбор, \trefk — компактно, без страницы.
-% В этой же книге: кликабельно + страница. В другой книге: «теория, с. 12». Нет нигде: просто код.
+% Тема или разбор есть в книге — кликабельно + страница. Ещё не написаны — просто код.
 \newcommand\pfKod[1]{\textcolor{pfAkcent}{\pfMedium #1}}
 \newcommand\pfStr[1]{\,{\color{pfSeryj}\footnotesize с.\,#1}}
-\newcommand\pf@ref[4]{% #1 код, #2 вид (tema/razbor), #3 подпись другой книги, #4 со страницей?
+\newcommand\pf@ref[4]{% #1 код, #2 вид (tema/razbor), #3 не используется, #4 со страницей?
   \edef\pf@x{\ifcsdef{pf@tl@#1}{\csuse{pf@tl@#1}}{}}%
   \ifdefempty{\pf@x}{\pfKod{#1}\PackageWarning{shpora}{Неизвестный код #1}}{%
     \ifcsdef{pf@have@#2:\pf@x}%
       {\hyperlink{#2:\pf@x}{\pfKod{#1}}\ifstrequal{#4}{y}{\pfStr{\getpagerefnumber{#2:\pf@x}}}{}}%
-      {\ifcsdef{r@EXT-#2:\pf@x}%
-        {\pfKod{#1}\ifstrequal{#4}{y}{\,{\color{pfSeryj}\footnotesize #3, с.\,\getpagerefnumber{EXT-#2:\pf@x}}}{}}%
-        {\pfKod{#1}}}}}
+      {\pfKod{#1}}}}
 \newcommand\tref[1]{\pf@ref{#1}{tema}{теория}{y}}
 \newcommand\trefk[1]{\pf@ref{#1}{tema}{теория}{n}}
 \newcommand\rref[1]{\pf@ref{#1}{razbor}{практика}{y}}
@@ -213,13 +205,10 @@
   \def\pf@txt{№\,\csuse{pf@task@#1}~— \csuse{pf@title@#1}}%
   \ifcsdef{pf@have@tip:\pf@y}%
     {\hyperlink{tip:\pf@y}{\textcolor{pfAkcent}{\pf@txt}}\pfStr{\getpagerefnumber{tip:\pf@y}}}%
-    {\ifcsdef{r@EXT-tip:\pf@y}%
-      {\pf@txt\,{\footnotesize практика, с.\,\getpagerefnumber{EXT-tip:\pf@y}}}%
-      {\pf@txt}}}
+    {\pf@txt}}
 \newcommand\pfMetaZadaniya{Задания ЕГЭ: №}
 % Номера заданий под темой ведут в практику — к разборам этого задания.
-% Разборы в этой книге — обычная ссылка; в соседней книге (практика.pdf) — ссылка в тот файл;
-% разборов пока нет — серый номер без ссылки.
+% Разборы есть — фиолетовый номер-ссылка; разборов пока нет — серый номер без ссылки.
 \ExplSyntaxOn
 \NewDocumentCommand\pfZadaniyaSsylki{m}{
   \clist_set:Ne \l_tmpa_clist {#1}
@@ -228,8 +217,7 @@
   \clist_use:Nn \l_tmpb_clist {,~} }
 \ExplSyntaxOff
 \newcommand\pfZadanieSsylka[1]{%
-  \ifcsdef{r@zadanie:#1}{\hyperlink{zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}%
-    {\ifcsdef{r@EXT-zadanie:#1}{\href{практика.pdf\#zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}{#1}}}
+  \ifcsdef{r@zadanie:#1}{\hyperlink{zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}{#1}}
 \newcommand\pfDlinnyeTemy{}
 
 \NewDocumentEnvironment{tema}{m +b}{%
