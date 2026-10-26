@@ -217,19 +217,19 @@
       {\pf@txt\,{\footnotesize практика, с.\,\getpagerefnumber{EXT-tip:\pf@y}}}%
       {\pf@txt}}}
 \newcommand\pfMetaZadaniya{Задания ЕГЭ: №}
-% Номера заданий в теме — ссылки на раздел «Задания ЕГЭ → темы» (если он есть в книге)
+% Номера заданий под темой ведут в практику — к разборам этого задания.
+% Разборы в этой книге — обычная ссылка; в соседней книге (практика.pdf) — ссылка в тот файл;
+% разборов пока нет — серый номер без ссылки.
 \ExplSyntaxOn
 \NewDocumentCommand\pfZadaniyaSsylki{m}{
   \clist_set:Ne \l_tmpa_clist {#1}
-  \cs_if_exist:cTF {r@ukazatel}
-    { \clist_clear:N \l_tmpb_clist
-      \clist_map_function:NN \l_tmpa_clist \pf_zad_ssylka:n
-      \clist_use:Nn \l_tmpb_clist {,~} }
-    { \clist_use:Nn \l_tmpa_clist {,~} } }
-\cs_new_protected:Npn \pf_zad_ssylka:n #1
-  { \clist_put_right:Nn \l_tmpb_clist { \pfZadanieSsylka{#1} } }
+  \clist_clear:N \l_tmpb_clist
+  \clist_map_inline:Nn \l_tmpa_clist { \clist_put_right:Nn \l_tmpb_clist { \pfZadanieSsylka{##1} } }
+  \clist_use:Nn \l_tmpb_clist {,~} }
 \ExplSyntaxOff
-\newcommand\pfZadanieSsylka[1]{\hyperlink{ukaz:#1}{\textcolor{pfAkcent}{#1}}}
+\newcommand\pfZadanieSsylka[1]{%
+  \ifcsdef{r@zadanie:#1}{\hyperlink{zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}%
+    {\ifcsdef{r@EXT-zadanie:#1}{\href{практика.pdf\#zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}{#1}}}
 \newcommand\pfDlinnyeTemy{}
 
 \NewDocumentEnvironment{tema}{m +b}{%
