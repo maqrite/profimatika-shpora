@@ -172,10 +172,16 @@
 % Вызывается в начале темы: полная или компактная плашка (#1 — высота темы)
 \newcommand\pf@plashkaPeredTemoj[1]{\ifpf@plashkaZhdet\global\pf@plashkaZhdetfalse
   \setbox\pf@plbox=\vbox{\hsize=\linewidth\expandafter\pfGlavaVid\pf@plArgs}%
-  \ifdim\dimexpr\ht\pf@plbox+\dp\pf@plbox+#1\relax>\textheight
+  \ifdim\dimexpr\ht\pf@plbox+\dp\pf@plbox+#1+\pf@zapas\relax>\textheight
     \ifdim#1>\textheight\expandafter\pfGlavaVid\pf@plArgs
-    \else\typeout{PF-KOMPAKTNAYA-PLASHKA: \pfGlavaKod}\expandafter\pfGlavaVidMal\pf@plArgs\fi
+    \else\typeout{PF-KOMPAKTNAYA-PLASHKA: \pfGlavaKod}%
+      % если и под компактной не влезает — тема начинается сразу под ней и переносится
+      \setbox\pf@plbox=\vbox{\hsize=\linewidth\expandafter\pfGlavaVidMal\pf@plArgs}%
+      \ifdim\dimexpr\ht\pf@plbox+\dp\pf@plbox+#1+\pf@zapas\relax>\textheight\global\pf@razorvattrue\fi
+      \expandafter\pfGlavaVidMal\pf@plArgs\fi
   \else\expandafter\pfGlavaVid\pf@plArgs\fi\fi}
+\newif\ifpf@razorvat
+\newdimen\pf@zapas \pf@zapas=8mm % отступы между плашкой и темой, которые не попадают в замер
 % Как выглядит начало главы (переопределяется в стиль/оформление/*.tex)
 \newcommand\pfGlavaVid[3]{%
   {\color{pfSeryj}\small #3}\par\vspace{1mm}
@@ -231,7 +237,8 @@
     \begin{tcolorbox}[pfTema={#1}, before skip=0pt, after skip=0pt]#2\pf@temaNiz\end{tcolorbox}}%
   \pf@izmfalse
   \pf@plashkaPeredTemoj{\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax}%
-  \ifdim\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax>\textheight
+  \ifdim\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax>\textheight\global\pf@razorvattrue\fi
+  \ifpf@razorvat\global\pf@razorvatfalse
     \typeout{PF-DLINNAYA: #1}%
     \par\ifdim\dimexpr\pagegoal-\pagetotal\relax<0.5\textheight\clearpage\fi
     \begin{tcolorbox}[pfTema={#1}, pfTemaDlin={#1}]\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
