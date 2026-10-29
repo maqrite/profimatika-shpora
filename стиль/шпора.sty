@@ -170,7 +170,9 @@
 \AddToHook{cmd/clearpage/before}{\pf@vyvestiPlashku}
 \AtEndDocument{\pf@vyvestiPlashku}
 % Вызывается в начале темы: полная или компактная плашка (#1 — высота темы)
-\newcommand\pf@plashkaPeredTemoj[1]{\ifpf@plashkaZhdet\global\pf@plashkaZhdetfalse
+\newif\ifpf@poslePlashki
+\newcommand\pf@plashkaPeredTemoj[1]{\global\pf@poslePlashkifalse
+  \ifpf@plashkaZhdet\global\pf@plashkaZhdetfalse\global\pf@poslePlashkitrue
   \setbox\pf@plbox=\vbox{\hsize=\linewidth\expandafter\pfGlavaVid\pf@plArgs}%
   \ifdim\dimexpr\ht\pf@plbox+\dp\pf@plbox+#1+\pf@zapas\relax>\textheight
     \ifdim#1>\textheight\expandafter\pfGlavaVid\pf@plArgs
@@ -240,7 +242,7 @@
   \ifdim\dimexpr\ht\pf@izmbox+\dp\pf@izmbox\relax>\textheight\global\pf@razorvattrue\fi
   \ifpf@razorvat\global\pf@razorvatfalse
     \typeout{PF-DLINNAYA: #1}%
-    \par\ifdim\dimexpr\pagegoal-\pagetotal\relax<0.5\textheight\clearpage\fi
+    \par\ifpf@poslePlashki\else\clearpage\fi
     \begin{tcolorbox}[pfTema={#1}, pfTemaDlin={#1}]\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
   \else
     \begin{tcolorbox}[pfTema={#1}]\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
