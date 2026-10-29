@@ -207,8 +207,9 @@ def main():
         L.append(r"  \pfGlava{%s}" % ch)
         for t in info["topics"]:
             rel = f"теория/{ch[0]}/{t['code']}.tex"
-            L.append(r"  \input{%s}" % rel)
             made += stub_topic(rel, t)
+            gotova = 0 if "\\pfZagotovka" in open(os.path.join(ROOT, rel), encoding="utf8").read() else 1
+            L.append(r"  \pfTemaFajl{%s}{%d}" % (rel, gotova))
         L.append("}")
     write("содержание-теории.tex", L)
 

@@ -31,6 +31,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{3pt plus 1pt}
 \frenchspacing
+\setlength{\emergencystretch}{3em}  % без переносов (нет русских шаблонов) строки не вылезают за поле
 \RequirePackage{microtype}
 
 % ================= Пакеты =================
@@ -79,6 +80,10 @@
 % Собрать только часть глав (для пилота): \pfTolkoGlavy{Ч1,А1}
 \def\pf@tolko{}
 \newcommand\pfTolkoGlavy[1]{\forcsvlist{\listadd\pf@tolko}{#1}}
+% \pfTolkoGotovye — не включать темы-заготовки («Тема в работе»), например в пилоте
+\newif\ifpf@tolkoGotovye
+\newcommand\pfTolkoGotovye{\pf@tolkoGotovyetrue}
+\newcommand\pfTemaFajl[2]{\ifpf@tolkoGotovye\ifnum#2=0 \else\input{#1}\fi\else\input{#1}\fi}
 \newcommand\pfEsliGlava[2]{\ifdefempty{\pf@tolko}{#2}{\xifinlist{#1}{\pf@tolko}{#2}{}}}
 
 % ================= Данные из таблицы (заполняет generate.py) =================
