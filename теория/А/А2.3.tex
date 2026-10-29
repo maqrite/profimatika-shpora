@@ -45,13 +45,26 @@ $a^{\log_a b}=b$, \ $b>0$ & в эту степень надо возвести $
 Ответ: $x\in(1;2)\cup(2;5)$.
 \end{primer}
 
-\opr{Знак логарифма:}
+\opr{Знак логарифма.} Отметим основание $a$ и число $b$ на одной числовой прямой.
+Оба числа положительны, поэтому всё, что левее нуля, отпадает:
+\begin{center}
+\begin{tikzpicture}[x=2.3cm, y=1cm, font=\small]
+  \fill[pattern=north east lines, pattern color=pfBrend!70] (-0.45,-0.32) rectangle (0,0.32);
+  \draw[pfBrend, line width=1.6pt] (0,0) -- (1,0);
+  \draw[pfOrange, line width=1.6pt] (1,0) -- (2.3,0);
+  \draw[-{Stealth[length=2mm]}, thin] (-0.6,0) -- (2.5,0) node[below left=1pt] {$a,\ b$};
+  \draw[thick] (0,-0.32) -- (0,0.32);
+  \filldraw[fill=white, draw=black] (0,0) circle (1.6pt) node[below right=1pt] {$0$};
+  \filldraw[fill=white, draw=black] (1,0) circle (1.6pt) node[below=2pt] {$1$};
+  \node[above=2pt, pfBrend] at (0.5,0) {меньше 1};
+  \node[above=2pt, pfOrange] at (1.65,0) {больше 1};
+\end{tikzpicture}
+\end{center}
 \begin{itemize}[itemsep=0pt, topsep=2pt]
-  \item $\log_a b>0$, если $a$ и $b$ по одну сторону от 1 (оба больше 1 или оба
-        между 0 и 1);
-  \item $\log_a b<0$, если по разные стороны.
+  \item если $a$ и $b$ по одну сторону от 1, то $\log_a b>0$;
+  \item если $a$ и $b$ по разные стороны от 1, то $\log_a b<0$.
 \end{itemize}
-Например, $\log_2 5>0$, \ $\log_{0{,}5}0{,}3>0$, \ $\log_3 0{,}2<0$.
+Например, $\log_2 5>0$, \ $\log_2\frac13<0$, \ $\log_{\frac13}\frac14>0$.
 
 \begin{primer}
 Определите знак выражения $\log_3 0{,}5\cdot\log_{0{,}2}0{,}1$.
