@@ -313,7 +313,7 @@
   \tikz\draw[pfRamka, line width=0.6pt, rounded corners=1.8mm] (1-|1) rectangle (last-|last);}
 \NewDocumentEnvironment{pfTablica}{O{} m +b}{%
   \pf@shapkatrue\pf@levofalse\pgfkeys{/pfTab, #1}\pf@schitajStolbcy{#3}%
-  \par\vspace{1.5mm}\begingroup\ifpf@levo\noindent\else\centering\fi\small
+  \par\nopagebreak\vspace{1.5mm}\begingroup\ifpf@levo\noindent\else\centering\fi\small
   \setlength{\tabcolsep}{2.2mm}%
   \ifpf@shapka
     \begin{NiceTabular}{#2}[rounded-corners=1.8mm, cell-space-limits=1.1mm,

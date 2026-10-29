@@ -128,6 +128,11 @@
   borderline west={1.6pt}{0pt}{pfAkcent!60}, boxrule=0pt, arc=0pt,
   left=3mm, right=0mm, top=0.5mm, bottom=0.5mm, before skip=3pt, after skip=3pt,
   halign=flush left, fontupper=\small, before upper={\textcolor{pfAkcent}{\pfMedium Пример.}\ }}
+% Ключевая формула / свойство: \begin{klyuch} ... \end{klyuch}
+\newtcolorbox{klyuch}{enhanced, breakable=false, colback=pfFon, colframe=white,
+  borderline west={1.6pt}{0pt}{pfBrend}, boxrule=0pt, arc=0pt,
+  left=3mm, right=2mm, top=0.8mm, bottom=0.8mm, before skip=3pt, after skip=3pt,
+  halign=flush left}
 % Частая ошибка
 \newtcolorbox{oshibka}{enhanced, breakable=false, colback=pfOrange!7, colframe=white,
   borderline west={1.6pt}{0pt}{pfOrange}, boxrule=0pt, arc=0pt,
@@ -201,9 +206,11 @@
 \newbox\pf@izmbox
 \newcommand\pf@temaVerh{\ifpf@izm\else
   \pf@mark{tema}{\pf@x}\pdfbookmark[2]{\pf@cur\space\csuse{pf@title@\pf@cur}}{bm-tema-\pf@x}\fi}
+\newif\ifpf@nizVverhu
 \newcommand\pf@temaNiz{%
   \ifboolexpr{test {\ifcsvoid{pf@deps@\pf@cur}} and test {\ifcsvoid{pf@gde@\pf@cur}}
-    and test {\ifcsvoid{pf@tasks@\pf@cur}}}{}{\tcblower
+    and test {\ifcsvoid{pf@tasks@\pf@cur}}}{}{\ifpf@nizVverhu
+    \par\unskip\unpenalty\unskip\unpenalty\unskip\unpenalty\unskip\nopagebreak\vspace{3pt}\tcbline\nopagebreak\footnotesize\color{pfSeryj}\else\tcblower\fi
   \ifcsvoid{pf@deps@\pf@cur}{}{\pfMetaOpiraetsya\ \csuse{pf@deps@\pf@cur}\par}%
   \ifcsvoid{pf@gde@\pf@cur}{}{\pf@gdePervyjtrue\pfMetaGde\ \csuse{pf@gde@\pf@cur}\par}%
   \ifcsvoid{pf@tasks@\pf@cur}{}{\pfMetaZadaniya\ \pfZadaniyaSsylki{\csuse{pf@tasks@\pf@cur}}}}}
@@ -231,6 +238,10 @@
 \newcommand\pfZadanieSsylka[1]{%
   \ifcsdef{r@zadanie:#1}{\hyperlink{zadanie:#1}{\textcolor{pfPurple}{\pfMedium #1}}}{#1}}
 \newcommand\pfDlinnyeTemy{}
+% Длинная тема рвётся только между блоками: абзац, формула, список и таблица не делятся между страницами
+\newcommand\pf@bezRazryvov{\interlinepenalty=10000 \clubpenalty=10000 \widowpenalty=10000
+  \displaywidowpenalty=10000 \predisplaypenalty=10000 \postdisplaypenalty=10000
+  \brokenpenalty=10000 \setlist{beginpenalty=10000, midpenalty=10000}\pf@nizVverhutrue}
 
 \NewDocumentEnvironment{tema}{m +b}{%
   \def\pf@cur{#1}\edef\pf@x{\csuse{pf@tl@#1}}%
@@ -243,7 +254,7 @@
   \ifpf@razorvat\global\pf@razorvatfalse
     \typeout{PF-DLINNAYA: #1}%
     \par\ifpf@poslePlashki\else\clearpage\fi
-    \begin{tcolorbox}[pfTema={#1}, pfTemaDlin={#1}]\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
+    \begin{tcolorbox}[pfTema={#1}, pfTemaDlin={#1}]\pf@bezRazryvov\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
   \else
     \begin{tcolorbox}[pfTema={#1}]\pf@temaVerh#2\pf@temaNiz\end{tcolorbox}%
   \fi}{}
